@@ -58,7 +58,7 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 	private List<Resident> friends = new ArrayList<>();
 	// private List<Object[][][]> regenUndo = new ArrayList<>(); // Feature is disabled as of MC 1.13, maybe it'll come back.
 	private UUID uuid = null;
-	private Town town = null;
+	private List<Town> towns = new ArrayList<>()
 	private long lastOnline;
 	private long registered;
 	private long joinedTownAt;
