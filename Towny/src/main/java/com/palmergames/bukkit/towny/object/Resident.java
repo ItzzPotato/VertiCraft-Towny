@@ -57,8 +57,12 @@ import java.util.stream.Collectors;
 public class Resident extends TownyObject implements InviteReceiver, EconomyHandler, TownBlockOwner, Identifiable, ForwardingAudience.Single {
 	private List<Resident> friends = new ArrayList<>();
 	// private List<Object[][][]> regenUndo = new ArrayList<>(); // Feature is disabled as of MC 1.13, maybe it'll come back.
-	private UUID uuid = null;
-	private List<Town> towns = new ArrayList<>()
+       private UUID uuid = null;
+       /**
+        * Primary town membership.
+        */
+       private Town town = null;
+       private List<Town> towns = new ArrayList<>();
 	private long lastOnline;
 	private long registered;
 	private long joinedTownAt;
