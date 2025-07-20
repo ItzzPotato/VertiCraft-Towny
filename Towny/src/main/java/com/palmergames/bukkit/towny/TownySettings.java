@@ -1121,7 +1121,7 @@ public class TownySettings {
 	}
 
 	public static String getMayorPrefix(Resident resident) {
-		return resident.isMayor() ? resident.getTownOrNull().getTownLevel().mayorPrefix() : "";
+               return resident.isMayor() ? resident.getPrimaryTown().getTownLevel().mayorPrefix() : "";
 	}
 
 	public static String getCapitalPostfix(Town town) {
@@ -1185,7 +1185,7 @@ public class TownySettings {
 	}
 
 	public static String getMayorPostfix(Resident resident) {
-		return resident.isMayor() ? resident.getTownOrNull().getTownLevel().mayorPostfix() : "";
+               return resident.isMayor() ? resident.getPrimaryTown().getTownLevel().mayorPostfix() : "";
 	}
 
 	public static String getNPCPrefix() {

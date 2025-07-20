@@ -17,9 +17,9 @@ public class KingCheck extends ChatCheck {
 	@Override
 	public boolean runCheck(Player player, String checkString) {
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();
-		Resident resident = townyUniverse.getResident(player.getUniqueId());
-		if(resident != null && resident.hasNation())
-			return resident.getTownOrNull().getNationOrNull().isKing(resident);
+               Resident resident = townyUniverse.getResident(player.getUniqueId());
+               if(resident != null && resident.hasNation())
+                       return resident.getPrimaryTown().getNationOrNull().isKing(resident);
 
 		return false;
 	}

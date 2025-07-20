@@ -653,7 +653,7 @@ public class TownBlock extends TownyObject {
 				|| (!hasMinTownMembershipDays() && !hasMaxTownMembershipDays()))
 			return;
 
-		Town residentTown = resident.getTownOrNull();
+               Town residentTown = resident.getPrimaryTownOrNull();
 		if (residentTown == null || !residentTown.equals(this.town))
 			return;
 

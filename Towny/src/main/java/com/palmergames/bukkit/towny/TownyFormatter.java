@@ -166,11 +166,11 @@ public class TownyFormatter {
 			screen.addComponentOf("lastonline", getResidentLastOnline(resident, translator));
 		
 		// Town: Camelot
-		String townLine = colourKeyValue(translator.of("status_town"), (!resident.hasTown() ? translator.of("status_no_town") : resident.getTownOrNull().getFormattedName() + formatPopulationBrackets(resident.getTownOrNull().getResidents().size()) ));
+               String townLine = colourKeyValue(translator.of("status_town"), (!resident.hasTown() ? translator.of("status_no_town") : resident.getPrimaryTown().getFormattedName() + formatPopulationBrackets(resident.getPrimaryTown().getResidents().size()) ));
 		if (!resident.hasTown())
 			screen.addComponentOf("town", townLine);
 		else {
-			Town town = resident.getTownOrNull();
+                       Town town = resident.getPrimaryTown();
 			List<String> residents = getFormattedNames(town.getResidents());
 			if (residents.size() > 34)
 				shortenOverLengthList(residents, 35, translator);

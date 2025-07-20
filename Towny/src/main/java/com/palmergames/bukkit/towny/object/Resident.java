@@ -259,13 +259,23 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 		return hasTown() && town.hasNation();
 	}
 
-	public Town getTown() throws NotRegisteredException {
+       public Town getTown() throws NotRegisteredException {
 
-		if (hasTown())
-			return town;
-		else
-			throw new NotRegisteredException(Translation.of("msg_err_resident_doesnt_belong_to_any_town"));
-	}
+               if (hasTown())
+                       return town;
+               else
+                       throw new NotRegisteredException(Translation.of("msg_err_resident_doesnt_belong_to_any_town"));
+       }
+
+       /**
+        * Alias of {@link #getTown()} maintained for API compatibility.
+        *
+        * @return The resident's primary town.
+        * @throws NotRegisteredException if the resident does not belong to any town.
+        */
+       public Town getPrimaryTown() throws NotRegisteredException {
+               return getTown();
+       }
 	
 	/**
 	 * Relatively safe to use after confirming there is a town using
@@ -273,10 +283,20 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 	 * 
 	 * @return Town the resident belongs to or null.
 	 */
-	@Nullable 
-	public Town getTownOrNull() {
-		return town;
-	}
+       @Nullable
+       public Town getTownOrNull() {
+               return town;
+       }
+
+       /**
+        * Alias of {@link #getTownOrNull()} to match the multi-town API.
+        *
+        * @return The resident's primary town or {@code null} if none.
+        */
+       @Nullable
+       public Town getPrimaryTownOrNull() {
+               return getTownOrNull();
+       }
 
 	public void setTown(Town town) throws AlreadyRegisteredException {
 		setTown(town, true);
@@ -595,7 +615,7 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 	public List<String> getTownRanks() {
 		if (TownyPerms.ranksWithTownLevelRequirementPresent() && !townRanks.isEmpty() && hasTown()) {
 			ArrayList<String> out = new ArrayList<>();
-			int townLevel = getTownOrNull().getLevelNumber();
+                       int townLevel = getPrimaryTown().getLevelNumber();
 			for (String rank : new ArrayList<>(townRanks)) {
 				int requiredTownLevelForRank = TownyPerms.getRankTownLevelReq(rank);
 				if (requiredTownLevelForRank == 0 || townLevel >= requiredTownLevelForRank)
@@ -935,7 +955,7 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 	public Nation getNationOrNull() {
 		if (!hasNation())
 			return null;
-		return getTownOrNull().getNationOrNull();
+               return getPrimaryTownOrNull().getNationOrNull();
 	}
 	
 	public boolean isOnline() {
@@ -1026,8 +1046,8 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 		double plotTax = 0.0;
 		double townTax = 0.0;
 
-		if (hasTown() && !taxExempt) {
-			town = getTownOrNull();
+               if (hasTown() && !taxExempt) {
+                       town = getPrimaryTown();
 			townTax = town.getTaxes();
 			if (town.isTaxPercentage())
 				townTax = Math.min(getAccount().getHoldingBalance() * townTax / 100, town.getMaxPercentTaxAmount());

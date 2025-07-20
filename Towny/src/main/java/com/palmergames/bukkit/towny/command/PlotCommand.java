@@ -1100,7 +1100,7 @@ public class PlotCommand extends BaseCommand implements CommandExecutor {
 			
 			TownyMessaging.sendPrefixedTownMessage(townBlock.getTownOrNull(), message);
 			
-			if (!resident.hasTown() || (resident.hasTown() && townBlock.getTownOrNull() != resident.getTownOrNull()))
+                       if (!resident.hasTown() || (resident.hasTown() && townBlock.getTownOrNull() != resident.getPrimaryTown()))
 				TownyMessaging.sendMsg(resident, message);
 			
 			BukkitTools.fireEvent(new PlotSetForSaleEvent(resident, townBlock.getPlotPrice(), townBlock));
@@ -1643,7 +1643,7 @@ public class PlotCommand extends BaseCommand implements CommandExecutor {
 		
 		TownyMessaging.sendPrefixedTownMessage(town, message);
 		
-		if (!resident.hasTown() || resident.getTownOrNull() != town)
+               if (!resident.hasTown() || resident.getPrimaryTown() != town)
 			TownyMessaging.sendMsg(player, message);
 	}
 
@@ -1660,7 +1660,7 @@ public class PlotCommand extends BaseCommand implements CommandExecutor {
 
 		TownyMessaging.sendPrefixedTownMessage(town, Translatable.of("msg_player_made_group_not_for_sale", player.getName(), group.getName()));
 		
-		if (!resident.hasTown() || resident.getTownOrNull() != town)
+               if (!resident.hasTown() || resident.getPrimaryTown() != town)
 			TownyMessaging.sendMsg(player, Translatable.of("msg_player_made_group_not_for_sale", player.getName(), group.getName()));
 	}
 

@@ -17,6 +17,6 @@ public class TownVariable extends ChatVariable {
 	@Override
 	public String parse(Player player, String message) {
 		Resident res = TownyUniverse.getInstance().getResident(player.getUniqueId());
-		return res != null && res.hasTown() ? res.getTownOrNull().getName() : "";
+               return res != null && res.hasTown() ? res.getPrimaryTown().getName() : "";
 	}
 }

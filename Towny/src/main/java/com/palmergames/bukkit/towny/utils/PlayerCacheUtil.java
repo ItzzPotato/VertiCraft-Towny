@@ -236,15 +236,15 @@ public class PlayerCacheUtil {
 			return TownBlockStatus.TOWN_RESIDENT;
 		
 		// Nation group.
-		if (TownySettings.areConqueredTownsGivenNationPlotPerms() && CombatUtil.isSameNation(town, resident.getTownOrNull()))
+               if (TownySettings.areConqueredTownsGivenNationPlotPerms() && CombatUtil.isSameNation(town, resident.getPrimaryTownOrNull()))
 			return TownBlockStatus.TOWN_NATION;
 		
 		// Ally group.
-		if (CombatUtil.isAlly(town, resident.getTownOrNull()))
+               if (CombatUtil.isAlly(town, resident.getPrimaryTownOrNull()))
 			return TownBlockStatus.TOWN_ALLY;
 		
 		// Enemy.
-		if (CombatUtil.isEnemy(resident.getTownOrNull(), town))
+               if (CombatUtil.isEnemy(resident.getPrimaryTownOrNull(), town))
 			return TownBlockStatus.ENEMY;
 
 		// Nothing left but Outsider.
@@ -337,7 +337,7 @@ public class PlayerCacheUtil {
 				if (nearestNation.hasResident(res)) {
 
 					// Prevent conquered towns using their nation's Nation Zone, unless that nation zone is surrounding the conquered town.
-					if (TownySettings.getNationZonesSkipConqueredTowns() && res.getTownOrNull().isConquered() && !nearestTown.hasResident(res)) {
+                                       if (TownySettings.getNationZonesSkipConqueredTowns() && res.getPrimaryTownOrNull().isConquered() && !nearestTown.hasResident(res)) {
 						cacheBlockErrMsg(player, Translatable.of("nation_zone_conquered_status_denies_use").forLocale(res));
 						return false;
 					}

@@ -1813,12 +1813,12 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 
 		if (TownyPerms.ranksWithTownLevelRequirementPresent()) {
 			int rankLevelReq = TownyPerms.getRankTownLevelReq(rank);
-			int levelNumber = target.getTownOrNull().getLevelNumber();
+                       int levelNumber = target.getPrimaryTown().getLevelNumber();
 			if (rankLevelReq > levelNumber)
 				throw new TownyException(Translatable.of("msg_town_or_nation_level_not_high_enough_for_this_rank", townWord, rank, townWord, levelNumber, rankLevelReq));
 		}
 
-		BukkitTools.ifCancelledThenThrow(new TownAddResidentRankEvent(target, rank, target.getTownOrNull()));
+               BukkitTools.ifCancelledThenThrow(new TownAddResidentRankEvent(target, rank, target.getPrimaryTownOrNull()));
 
 		target.addTownRank(rank);
 		target.save();
@@ -1836,7 +1836,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 		if (!target.hasTownRank(rank))
 			throw new TownyException(Translatable.of("msg_resident_doesnt_have_rank", target.getName(), townWord));
 
-		BukkitTools.ifCancelledThenThrow(new TownRemoveResidentRankEvent(target, rank, target.getTownOrNull()));
+               BukkitTools.ifCancelledThenThrow(new TownRemoveResidentRankEvent(target, rank, target.getPrimaryTownOrNull()));
 
 		target.removeTownRank(rank);
 		target.save();
@@ -3961,7 +3961,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 
 			// If the town is still null, the resident has to have a town.
 			if (town == null)
-				town = resident.getTownOrNull();
+                               town = resident.getPrimaryTown();
 
 			// Figure out how much to deposit or withdraw.
 			int amount;
@@ -4245,7 +4245,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 		Resident res = TownyUniverse.getInstance().getResident(player.getUniqueId());
 
 		if (res != null && res.hasTown()) {
-			return res.getTownOrNull().getTrustedResidents().stream().map(TownyObject::getName)
+                       return res.getPrimaryTown().getTrustedResidents().stream().map(TownyObject::getName)
 				.collect(Collectors.toList());
 		}
 
@@ -4256,7 +4256,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 		Resident res = TownyUniverse.getInstance().getResident(player.getUniqueId());
 
 		if (res != null && res.hasTown()) {
-			return res.getTownOrNull().getTrustedTowns().stream().map(TownyObject::getName)
+                       return res.getPrimaryTown().getTrustedTowns().stream().map(TownyObject::getName)
 				.collect(Collectors.toList());
 		}
 
@@ -4347,7 +4347,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 
 				Resident currentMayor = town.getMayor();
 				if (resident.equals(currentMayor)) {
-					TownyMessaging.sendErrorMsg(sender, Translatable.of("msg_town_buytown_already_mayor", resident.getTownOrNull().getName()));
+                                       TownyMessaging.sendErrorMsg(sender, Translatable.of("msg_town_buytown_already_mayor", resident.getPrimaryTown().getName()));
 					return;
 				}
 

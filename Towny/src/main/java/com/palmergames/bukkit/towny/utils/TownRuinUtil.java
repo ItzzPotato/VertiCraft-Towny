@@ -150,7 +150,7 @@ public class TownRuinUtil {
 	public static void processRuinedTownReclaimRequest(Player player) {
 		try {
 			final Resident resident = TownyUniverse.getInstance().getResident(player.getUniqueId());
-			final Town town = resident != null ? resident.getTownOrNull() : null;
+                       final Town town = resident != null ? resident.getPrimaryTownOrNull() : null;
 
 			if (town == null)
 				throw new TownyException(Translatable.of("msg_err_dont_belong_town"));

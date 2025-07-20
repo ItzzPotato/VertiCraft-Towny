@@ -315,7 +315,7 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		for (Resident toCheck : toSave)
 			saveResident(toCheck);
 		
-		if (resident.hasTown() && resident.getTownOrNull() != null)
+               if (resident.hasTown() && resident.getPrimaryTownOrNull() != null)
 			resident.removeTown();
 
 		if (resident.hasUUID() && !resident.isNPC())

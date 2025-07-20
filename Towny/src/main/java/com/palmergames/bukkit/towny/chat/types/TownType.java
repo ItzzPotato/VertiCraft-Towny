@@ -31,13 +31,13 @@ public class TownType extends ChatType {
 		if (resident == null || !resident.hasTown())
 			return recipients;
 		
-		final UUID town = resident.getTownOrNull().getUUID();
+               final UUID town = resident.getPrimaryTown().getUUID();
 
 		Collection<Player> newRecipients = new HashSet<>();
 
 		for(Player p : recipients) {
 			Resident playerResident = townyUniverse.getResident(p.getUniqueId());
-			if(playerResident != null && playerResident.hasTown() && playerResident.getTownOrNull().getUUID().equals(town)) {
+                       if(playerResident != null && playerResident.hasTown() && playerResident.getPrimaryTown().getUUID().equals(town)) {
 				newRecipients.add(p);
 			}
 		}

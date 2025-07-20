@@ -64,7 +64,7 @@ public class OnPlayerLogin implements Runnable {
 
 		TownyPerms.assignPermissions(resident, player);
 
-		final Town town = resident.getTownOrNull();
+               final Town town = resident.getPrimaryTownOrNull();
 		if (town != null) {
 			Nation nation = resident.getNationOrNull();
 

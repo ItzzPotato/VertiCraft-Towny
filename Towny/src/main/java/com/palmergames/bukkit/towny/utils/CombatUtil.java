@@ -469,7 +469,7 @@ public class CombatUtil {
 		if (residentA == null || residentB == null || !residentA.hasTown() || !residentB.hasTown())
 			return false;
 		
-		return isAlly(residentA.getTownOrNull(), residentB.getTownOrNull());
+               return isAlly(residentA.getPrimaryTownOrNull(), residentB.getPrimaryTownOrNull());
 	}
 
 	/**
@@ -484,7 +484,7 @@ public class CombatUtil {
 		if (a == null || b == null || !a.hasTown() || !b.hasTown())
 			return false;
 
-		return isAlly(a.getTownOrNull(), b.getTownOrNull());
+               return isAlly(a.getPrimaryTownOrNull(), b.getPrimaryTownOrNull());
 	}
 
 	/**
@@ -565,7 +565,7 @@ public class CombatUtil {
 		if (!a.hasTown() || !b.hasTown())
 			return false;
 				
-		return isSameNation(a.getTownOrNull(), b.getTownOrNull());
+               return isSameNation(a.getPrimaryTownOrNull(), b.getPrimaryTownOrNull());
 	}
 	
 	
@@ -579,7 +579,7 @@ public class CombatUtil {
 		if (!a.hasTown() || !b.hasTown())
 			return false;
 
-		return isSameTown(a.getTownOrNull(), b.getTownOrNull());
+               return isSameTown(a.getPrimaryTownOrNull(), b.getPrimaryTownOrNull());
 	}
 
 	/**
@@ -633,7 +633,7 @@ public class CombatUtil {
 		if (residentA == null || residentB == null || !residentA.hasTown() || !residentB.hasTown())
 			return false;
 
-		if (isEnemy(residentA.getTownOrNull(), residentB.getTownOrNull()))
+               if (isEnemy(residentA.getPrimaryTownOrNull(), residentB.getPrimaryTownOrNull()))
 			return true;
 		return false;
 	}
@@ -650,7 +650,7 @@ public class CombatUtil {
 		if (a == null || b == null || !a.hasTown() || !b.hasTown())
 			return false;
 
-		return isEnemy(a.getTownOrNull(), b.getTownOrNull());
+               return isEnemy(a.getPrimaryTownOrNull(), b.getPrimaryTownOrNull());
 	}
 
 	/**
@@ -682,8 +682,8 @@ public class CombatUtil {
 	 */
 	public static boolean isEnemyTownBlock(Player player, WorldCoord worldCoord) {
 		Resident resident = TownyUniverse.getInstance().getResident(player.getUniqueId());
-		if (resident != null && resident.hasTown() && worldCoord.hasTownBlock())
-			return CombatUtil.isEnemy(worldCoord.getTownOrNull(), resident.getTownOrNull());
+               if (resident != null && resident.hasTown() && worldCoord.hasTownBlock())
+                       return CombatUtil.isEnemy(worldCoord.getTownOrNull(), resident.getPrimaryTownOrNull());
 		return false;
 	}
 	

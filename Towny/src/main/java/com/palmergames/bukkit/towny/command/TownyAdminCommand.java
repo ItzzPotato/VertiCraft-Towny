@@ -1112,7 +1112,7 @@ public class TownyAdminCommand extends BaseCommand implements CommandExecutor {
 			if (!target.hasTown())
 				throw new TownyException(Translatable.of("msg_err_resident_doesnt_belong_to_any_town"));
 
-			town = target.getTownOrNull();
+               town = target.getPrimaryTown();
 		}
 		
 		int extraBlocks = MathUtil.getIntOrThrow(split[1]);
@@ -1944,7 +1944,7 @@ public class TownyAdminCommand extends BaseCommand implements CommandExecutor {
 			return;
 		}
 		Resident target = getResidentOrThrow(split[1]);
-		if (!target.hasTown() || !target.getTownOrNull().hasNation() || !target.getTownOrNull().getNationOrNull().getUUID().equals(nation.getUUID()))
+               if (!target.hasTown() || !target.getPrimaryTown().hasNation() || !target.getPrimaryTownOrNull().getNationOrNull().getUUID().equals(nation.getUUID()))
 			throw new TownyException(Translatable.of("msg_err_that_resident_doesnt_belong_to_that_nation"));
 
 		String rank = TownyPerms.matchNationRank(split[2]);

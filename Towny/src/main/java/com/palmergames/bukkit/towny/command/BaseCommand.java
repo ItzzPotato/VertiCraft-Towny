@@ -206,7 +206,7 @@ public class BaseCommand implements TabCompleter{
 		Resident res = TownyUniverse.getInstance().getResident(player.getUniqueId());
 		
 		if (res != null && res.hasTown()) {
-			return NameUtil.filterByStart(NameUtil.getNames(res.getTownOrNull().getResidents()), str);
+                       return NameUtil.filterByStart(NameUtil.getNames(res.getPrimaryTown().getResidents()), str);
 		}
 
 		return new ArrayList<>();
@@ -282,7 +282,7 @@ public class BaseCommand implements TabCompleter{
 	protected static Town getTownFromResidentOrThrow(@NotNull Resident resident) throws TownyException {
 		if (!resident.hasTown())
 			throw new TownyException(Translatable.of("msg_err_townyobject_x_has_no_town", resident));
-		return resident.getTownOrNull();
+               return resident.getPrimaryTown();
 	}
 
 	@NotNull

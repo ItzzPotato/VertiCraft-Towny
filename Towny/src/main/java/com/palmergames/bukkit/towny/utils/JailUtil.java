@@ -160,7 +160,7 @@ public class JailUtil {
 		Town town = null;
 		switch (reason) {
 		case ESCAPE -> {
-			town = resident.getTownOrNull();
+                       town = resident.getPrimaryTownOrNull();
 			
 			// First show a message to the resident, either by broadcasting to the resident's town or just the resident (if they have no town.)
 			if (town != null)
@@ -174,7 +174,7 @@ public class JailUtil {
 			unJailResident(resident);
 		}
 		case LEFT_TOWN -> {
-			town = resident.getTownOrNull();
+                       town = resident.getPrimaryTownOrNull();
 			TownyMessaging.sendMsg(resident, Translatable.of("msg_you_have_been_freed_from_jail"));
 			TownyMessaging.sendPrefixedTownMessage(town, Translatable.of("msg_player_escaped_jail_by_leaving_town", resident.getName()));
 			unJailResident(resident);
