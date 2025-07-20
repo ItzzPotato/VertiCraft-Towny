@@ -57,8 +57,9 @@ import java.util.stream.Collectors;
 public class Resident extends TownyObject implements InviteReceiver, EconomyHandler, TownBlockOwner, Identifiable, ForwardingAudience.Single {
 	private List<Resident> friends = new ArrayList<>();
 	// private List<Object[][][]> regenUndo = new ArrayList<>(); // Feature is disabled as of MC 1.13, maybe it'll come back.
-	private UUID uuid = null;
-	private List<Town> towns = new ArrayList<>()
+       private UUID uuid = null;
+       private Town town = null;
+       private List<Town> towns = new ArrayList<>();
 	private long lastOnline;
 	private long registered;
 	private long joinedTownAt;
@@ -291,16 +292,19 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 		setTitle("");
 		setSurname("");
 
-		if (town == null) {
-			this.town = null;
-			updatePerms();
-			return;
-		}
+               if (town == null) {
+                       towns.remove(this.town);
+                       this.town = null;
+                       updatePerms();
+                       return;
+               }
 
 		if (hasTown())
 			town.addResidentCheck(this);
 
-		this.town = town;
+               this.town = town;
+               if (!towns.contains(town))
+                       towns.add(town);
 		updatePerms();
 		town.addResident(this);
 
@@ -310,56 +314,56 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 		}
 	}
 	
-	public void removeTown() {
-		removeTown(false);
-	}
+       public void removeTown() {
+               removeTown(this.town);
+       }
 
-	public void removeTown(boolean townDeleted) {
-		if (!hasTown())
-			return;
+       public void removeTown(boolean townDeleted) {
+               removeTown(this.town);
+       }
 
-		Town town = this.town;
-		
-		BukkitTools.fireEvent(new TownPreRemoveResidentEvent(this, town));
+       public void removeTown(Town town) {
+               if (town == null || !towns.contains(town))
+                       return;
 
-		// Remove any non-embassy plots owned by the player in the town that the resident will leave.
-		for (TownBlock townBlock : town.getTownBlocks()) {
-			if (townBlock.getType() == TownBlockType.EMBASSY || !townBlock.hasResident(this))
-				continue;
-			
-			if (townBlock.removeResident()) {
-				this.townBlocks.remove(townBlock);
-				townBlock.setPlotPrice(town.getPlotPrice());
+               BukkitTools.fireEvent(new TownPreRemoveResidentEvent(this, town));
 
-				// Set the plot permissions to mirror the towns.
-				townBlock.setType(townBlock.getType());
-				townBlock.save();
-			}
-		}
-		
-		BukkitTools.fireEvent(new TownRemoveResidentEvent(this, town));
+               // Remove any non-embassy plots owned by the player in the town that the resident will leave.
+               for (TownBlock townBlock : town.getTownBlocks()) {
+                       if (townBlock.getType() == TownBlockType.EMBASSY || !townBlock.hasResident(this))
+                               continue;
 
-		try {
-			town.removeResident(this);
-		} catch (EmptyTownException e) {
-			if (!townDeleted) {
-				TownyMessaging.sendMsg(Translatable.of("msg_town_being_deleted_because_no_residents", town.getName()));
-				TownyUniverse.getInstance().getDataSource().removeTown(town, DeleteTownEvent.Cause.NO_RESIDENTS, null, false);
-			}
-		}
+                       if (townBlock.removeResident()) {
+                               this.townBlocks.remove(townBlock);
+                               townBlock.setPlotPrice(town.getPlotPrice());
 
-		try {
-			setTown(null);
-			
-		} catch (AlreadyRegisteredException ignored) {
-			// It cannot reach the point in the code at which the exception can be thrown.
-		}
-		
-		this.save();
-		
-		// Reset everyones cache permissions as this player losing their could affect multiple areas
-		Towny.getPlugin().resetCache();
-	}
+                               // Set the plot permissions to mirror the towns.
+                               townBlock.setType(townBlock.getType());
+                               townBlock.save();
+                       }
+               }
+
+               BukkitTools.fireEvent(new TownRemoveResidentEvent(this, town));
+
+               try {
+                       town.removeResident(this);
+               } catch (EmptyTownException e) {
+                       TownyMessaging.sendMsg(Translatable.of("msg_town_being_deleted_because_no_residents", town.getName()));
+                       TownyUniverse.getInstance().getDataSource().removeTown(town, DeleteTownEvent.Cause.NO_RESIDENTS, null, false);
+               }
+
+               towns.remove(town);
+               try {
+                       if (town == this.town)
+                               setTown(towns.isEmpty() ? null : towns.get(0));
+               } catch (AlreadyRegisteredException ignored) {
+               }
+
+               this.save();
+
+               // Reset everyones cache permissions as this player losing their could affect multiple areas
+               Towny.getPlugin().resetCache();
+       }
 
 	public void setFriends(List<Resident> newFriends) {
 
