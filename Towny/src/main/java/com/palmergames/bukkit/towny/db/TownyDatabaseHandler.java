@@ -315,8 +315,8 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		for (Resident toCheck : toSave)
 			saveResident(toCheck);
 		
-		if (resident.hasTown() && resident.getTownOrNull() != null)
-			resident.removeTown();
+               if (resident.hasTown() && resident.getPrimaryTown() != null)
+                       resident.removeTown();
 
 		if (resident.hasUUID() && !resident.isNPC())
 			saveHibernatedResident(resident.getUUID(), resident.getRegistered());
@@ -851,9 +851,9 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 				saveTownBlock(tb);				
 			}
 			
-			// Save the town if the player was the mayor.
-			if (resident.isMayor())
-				saveTown(resident.getTown());
+                       // Save the town if the player was the mayor.
+                       if (resident.isMayor())
+                               saveTown(resident.getPrimaryTown());
 			
 			// Make an oldResident with the previous name for use in searching friends/outlawlists/deleting the old resident file.
 			Resident oldResident = new Resident(oldName);

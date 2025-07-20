@@ -36,7 +36,7 @@ public class DrawSmokeTaskFactory {
 	}
 
 	public static Color getAffiliationColor(Resident resident, WorldCoord coord) {
-		Town residentTown = resident.getTownOrNull();
+               Town residentTown = resident.getPrimaryTown();
 		Town town = coord.getTownOrNull();
 
 		if (residentTown == null || town == null)

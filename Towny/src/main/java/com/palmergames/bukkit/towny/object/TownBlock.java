@@ -653,9 +653,9 @@ public class TownBlock extends TownyObject {
 				|| (!hasMinTownMembershipDays() && !hasMaxTownMembershipDays()))
 			return;
 
-		Town residentTown = resident.getTownOrNull();
-		if (residentTown == null || !residentTown.equals(this.town))
-			return;
+               boolean isResidentOfTown = resident.getTowns().contains(this.town);
+               if (!isResidentOfTown)
+                       return;
 
 		long joinDate = resident.getJoinedTownAt();
 

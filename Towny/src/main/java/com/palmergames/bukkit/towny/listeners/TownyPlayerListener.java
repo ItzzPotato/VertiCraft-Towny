@@ -1076,8 +1076,8 @@ public class TownyPlayerListener implements Listener {
 		if (tb == null)
 			return keepInventory;
 
-		if (resident.hasTown() && !keepInventory) {
-			Town town = resident.getTownOrNull();
+               if (resident.hasTown() && !keepInventory) {
+                       Town town = resident.getPrimaryTown();
 			Town tbTown = tb.getTownOrNull();
 			// Sometimes we keep the inventory only when they are in their own town.
 			if (TownySettings.getKeepInventoryInOwnTown() && tbTown.equals(town))
@@ -1274,7 +1274,7 @@ public class TownyPlayerListener implements Listener {
 	}
 
 	public boolean blockWarPlayerCommand(Player player, Resident resident, String command) {
-		if (resident.hasTown() && resident.getTownOrNull().hasActiveWar() && blockedWarCommands.containsCommand(command)) {
+               if (resident.hasTown() && resident.getPrimaryTown().hasActiveWar() && blockedWarCommands.containsCommand(command)) {
 			TownyMessaging.sendErrorMsg(player, Translatable.of("msg_command_war_blocked"));
 			return true;
 		}
@@ -1341,7 +1341,7 @@ public class TownyPlayerListener implements Listener {
 			if (town.hasResident(resident) 
 				|| resident.hasPermissionNode(PermissionNodes.TOWNY_ADMIN_TOURIST_COMMAND_LIMITATION_BYPASS.getNode())
 				|| TownySettings.doTrustedResidentsBypassTownBlockedCommands() && town.hasTrustedResident(resident)
-				|| (resident.hasTown() && TownySettings.doAlliesBypassTownBlockedCommands() && CombatUtil.isAlly(town, resident.getTownOrNull())))
+                               || (resident.hasTown() && TownySettings.doAlliesBypassTownBlockedCommands() && CombatUtil.isAlly(town, resident.getPrimaryTown())))
 				return false;
 
 			TownyMessaging.sendErrorMsg(player, Translatable.of("msg_command_outsider_blocked", town.getName()));

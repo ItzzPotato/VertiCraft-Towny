@@ -1120,9 +1120,9 @@ public class TownySettings {
 		return resident.isKing() ? resident.getNationOrNull().getNationLevel().kingPrefix() : "";
 	}
 
-	public static String getMayorPrefix(Resident resident) {
-		return resident.isMayor() ? resident.getTownOrNull().getTownLevel().mayorPrefix() : "";
-	}
+       public static String getMayorPrefix(Resident resident) {
+               return resident.isMayor() ? resident.getPrimaryTown().getTownLevel().mayorPrefix() : "";
+       }
 
 	public static String getCapitalPostfix(Town town) {
 		return town.hasNation() ? getCapitalPostfix(town.getNationOrNull()) : "";
@@ -1184,9 +1184,9 @@ public class TownySettings {
 		return resident.isKing() ? resident.getNationOrNull().getNationLevel().kingPostfix() : "";
 	}
 
-	public static String getMayorPostfix(Resident resident) {
-		return resident.isMayor() ? resident.getTownOrNull().getTownLevel().mayorPostfix() : "";
-	}
+       public static String getMayorPostfix(Resident resident) {
+               return resident.isMayor() ? resident.getPrimaryTown().getTownLevel().mayorPostfix() : "";
+       }
 
 	public static String getNPCPrefix() {
 

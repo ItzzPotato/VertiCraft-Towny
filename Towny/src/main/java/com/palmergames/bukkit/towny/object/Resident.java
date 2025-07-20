@@ -273,10 +273,34 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 	 * 
 	 * @return Town the resident belongs to or null.
 	 */
-	@Nullable 
-	public Town getTownOrNull() {
-		return town;
-	}
+        @Nullable
+        public Town getTownOrNull() {
+                return town;
+        }
+
+       /**
+        * Returns the resident's primary town. This currently mirrors
+        * {@link #getTownOrNull()} until multi-town membership is
+        * fully implemented.
+        *
+        * @return the resident's primary town or {@code null}.
+        */
+       @Nullable
+       public Town getPrimaryTown() {
+               return getTownOrNull();
+       }
+
+       /**
+        * Returns a list of towns this resident belongs to. This method
+        * currently returns a single-item list containing the resident's
+        * primary town if they have one.
+        *
+        * @return list of towns the resident is a member of.
+        */
+       public List<Town> getTowns() {
+               Town primaryTown = getTownOrNull();
+               return primaryTown == null ? Collections.emptyList() : Collections.singletonList(primaryTown);
+       }
 
 	public void setTown(Town town) throws AlreadyRegisteredException {
 		setTown(town, true);

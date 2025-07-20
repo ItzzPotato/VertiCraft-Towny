@@ -2916,8 +2916,8 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 	public static void townKick(Player player, String[] names) throws TownyException {
 		checkPermOrThrow(player, PermissionNodes.TOWNY_COMMAND_TOWN_KICK.getNode());
 		catchRuinedTown(player);
-		Resident resident = getResidentOrThrow(player);
-		Town town = resident.getTown();
+               Resident resident = getResidentOrThrow(player);
+               Town town = resident.getPrimaryTown();
 
 		townKickResidents(player, resident, town, ResidentUtil.getValidatedResidentsOfTown(player, town, names));
 
@@ -3960,8 +3960,8 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(Translatable.of("msg_err_dont_belong_town"));
 
 			// If the town is still null, the resident has to have a town.
-			if (town == null)
-				town = resident.getTownOrNull();
+                       if (town == null)
+                               town = resident.getPrimaryTown();
 
 			// Figure out how much to deposit or withdraw.
 			int amount;
@@ -4346,8 +4346,8 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 				}
 
 				Resident currentMayor = town.getMayor();
-				if (resident.equals(currentMayor)) {
-					TownyMessaging.sendErrorMsg(sender, Translatable.of("msg_town_buytown_already_mayor", resident.getTownOrNull().getName()));
+                               if (resident.equals(currentMayor)) {
+                                       TownyMessaging.sendErrorMsg(sender, Translatable.of("msg_town_buytown_already_mayor", resident.getPrimaryTown().getName()));
 					return;
 				}
 
