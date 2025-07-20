@@ -57,8 +57,15 @@ import java.util.stream.Collectors;
 public class Resident extends TownyObject implements InviteReceiver, EconomyHandler, TownBlockOwner, Identifiable, ForwardingAudience.Single {
 	private List<Resident> friends = new ArrayList<>();
 	// private List<Object[][][]> regenUndo = new ArrayList<>(); // Feature is disabled as of MC 1.13, maybe it'll come back.
-	private UUID uuid = null;
-	private List<Town> towns = new ArrayList<>()
+       private UUID uuid = null;
+       /**
+        * Primary town this resident belongs to.
+        */
+       private Town town = null;
+       /**
+        * Additional towns this resident is a member of.
+        */
+       private List<Town> towns = new ArrayList<>();
 	private long lastOnline;
 	private long registered;
 	private long joinedTownAt;
@@ -314,9 +321,9 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 		removeTown(false);
 	}
 
-	public void removeTown(boolean townDeleted) {
-		if (!hasTown())
-			return;
+        public void removeTown(boolean townDeleted) {
+                if (!hasTown())
+                        return;
 
 		Town town = this.town;
 		
@@ -357,9 +364,48 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 		
 		this.save();
 		
-		// Reset everyones cache permissions as this player losing their could affect multiple areas
-		Towny.getPlugin().resetCache();
-	}
+                // Reset everyones cache permissions as this player losing their could affect multiple areas
+                Towny.getPlugin().resetCache();
+        }
+
+       /**
+        * Adds an additional town to this resident without changing their primary town.
+        *
+        * @param town Town to add.
+        */
+       public void addTown(Town town) {
+               if (town == null || towns.contains(town))
+                       return;
+
+               towns.add(town);
+               town.addResident(this);
+       }
+
+       /**
+        * Removes the resident from the specified town.
+        *
+        * @param town Town to remove the resident from.
+        */
+       public void removeTown(Town town) {
+               if (town == null)
+                       return;
+
+               if (this.town != null && this.town.equals(town)) {
+                       removeTown();
+                       return;
+               }
+
+               if (!towns.contains(town))
+                       return;
+
+               try {
+                       town.removeResident(this);
+               } catch (EmptyTownException ignored) {
+               }
+
+               towns.remove(town);
+               save();
+       }
 
 	public void setFriends(List<Resident> newFriends) {
 
