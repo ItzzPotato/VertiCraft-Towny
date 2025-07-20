@@ -848,42 +848,53 @@ public final class TownySQLSource extends TownyDatabaseHandler {
 			} catch (SQLException ignored) {
 			}
 
-			line = rs.getString("town");
-			if ((line != null) && (!line.isEmpty())) {
-				Town town = universe.getTown(line);
-				if (town == null) {
-					TownyMessaging.sendErrorMsg("Loading Error: " + resident.getName() + " tried to load the town " + line + " which is invalid, removing town from the resident.");
-					resident.setTown(null, false);
-				}
-				else {
-					resident.setTown(town, false);
+                    line = rs.getString("town");
+                    if ((line != null) && (!line.isEmpty())) {
+                            String[] townNames = line.split(",");
+                            Town primary = null;
+                            for (String townName : townNames) {
+                                    Town town = universe.getTown(townName);
+                                    if (town == null) {
+                                            TownyMessaging.sendErrorMsg("Loading Error: " + resident.getName() + " tried to load the town " + townName + " which is invalid, removing town from the resident.");
+                                    } else {
+                                            if (primary == null) {
+                                                    resident.setTown(town, false);
+                                                    primary = town;
+                                            } else {
+                                                    resident.addTown(town);
+                                            }
+                                    }
+                            }
 
-					try {
-						resident.setTitle(rs.getString("title"));
-					} catch (SQLException e) {
-						plugin.getLogger().log(Level.WARNING, "Could not get title column on the residents table", e);
-					}
-					try {
-						resident.setSurname(rs.getString("surname"));
-					} catch (SQLException e) {
-						plugin.getLogger().log(Level.WARNING, "Could not get surname column on the residents table", e);
-					}
+                            if (primary != null) {
+                                    try {
+                                            resident.setTitle(rs.getString("title"));
+                                    } catch (SQLException e) {
+                                            plugin.getLogger().log(Level.WARNING, "Could not get title column on the residents table", e);
+                                    }
+                                    try {
+                                            resident.setSurname(rs.getString("surname"));
+                                    } catch (SQLException e) {
+                                            plugin.getLogger().log(Level.WARNING, "Could not get surname column on the residents table", e);
+                                    }
 
-					try {
-						line = rs.getString("town-ranks");
-						if ((line != null) && (!line.isEmpty())) {
-							search = (line.contains("#")) ? "#" : ",";
-							resident.setTownRanks(Arrays.asList((line.split(search))));
-						}
-					} catch (Exception ignored) {}
+                                    try {
+                                            line = rs.getString("town-ranks");
+                                            if ((line != null) && (!line.isEmpty())) {
+                                                    search = (line.contains("#")) ? "#" : ",";
+                                                    resident.setTownRanks(Arrays.asList((line.split(search))));
+                                            }
+                                    } catch (Exception ignored) {}
 
-					try {
-						line = rs.getString("nation-ranks");
-						if ((line != null) && (!line.isEmpty())) {
-							search = (line.contains("#")) ? "#" : ",";
-							resident.setNationRanks(Arrays.asList((line.split(search))));
-						}
-					} catch (Exception ignored) {}
+                                    try {
+                                            line = rs.getString("nation-ranks");
+                                            if ((line != null) && (!line.isEmpty())) {
+                                                    search = (line.contains("#")) ? "#" : ",";
+                                                    resident.setNationRanks(Arrays.asList((line.split(search))));
+                                            }
+                                    } catch (Exception ignored) {}
+                            }
+                    }
 				}
 			}
 			return true;
@@ -2311,7 +2322,7 @@ public final class TownySQLSource extends TownyDatabaseHandler {
 			
 			if (!TownySettings.getDefaultResidentAbout().equals(resident.getAbout()))
 				res_hm.put("about", resident.getAbout());
-			res_hm.put("town", resident.hasTown() ? resident.getTown().getName() : "");
+                        res_hm.put("town", resident.hasTown() ? resident.getTowns().stream().map(Town::getName).collect(Collectors.joining(",")) : "");
 			res_hm.put("town-ranks", resident.hasTown() ? StringMgmt.join(resident.getTownRanksForSaving(), "#") : "");
 			res_hm.put("nation-ranks", resident.hasTown() ? StringMgmt.join(resident.getNationRanksForSaving(), "#") : "");
 			res_hm.put("friends", StringMgmt.join(resident.getFriends(), "#"));

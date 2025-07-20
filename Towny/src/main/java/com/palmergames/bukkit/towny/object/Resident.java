@@ -58,8 +58,17 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 	private List<Resident> friends = new ArrayList<>();
 	// private List<Object[][][]> regenUndo = new ArrayList<>(); // Feature is disabled as of MC 1.13, maybe it'll come back.
 	private UUID uuid = null;
-	private List<Town> towns = new ArrayList<>()
-	private long lastOnline;
+       /**
+        * Primary town used for backward compatible APIs.
+        */
+       private Town town = null;
+
+       /**
+        * Collection of all towns this resident belongs to.  Index 0 is treated as
+        * the primary town.
+        */
+       private List<Town> towns = new ArrayList<>();
+       private long lastOnline;
 	private long registered;
 	private long joinedTownAt;
 	private boolean isNPC = false;
@@ -249,23 +258,39 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 		return hasTown() && town.isMayor(this);
 	}
 
-	public boolean hasTown() {
+       public boolean hasTown() {
 
-		return town != null;
-	}
+               return !towns.isEmpty();
+       }
 
 	public boolean hasNation() {
 
 		return hasTown() && town.hasNation();
 	}
 
-	public Town getTown() throws NotRegisteredException {
+       /**
+        * @return Primary town this resident belongs to.
+        * @throws NotRegisteredException If the resident is townless.
+        * @deprecated Use {@link #getPrimaryTown()} for clarity when supporting
+        *             multi-town residents.
+        */
+       @Deprecated
+       public Town getTown() throws NotRegisteredException {
+               if (hasTown())
+                       return towns.get(0);
+               else
+                       throw new NotRegisteredException(Translation.of("msg_err_resident_doesnt_belong_to_any_town"));
+       }
 
-		if (hasTown())
-			return town;
-		else
-			throw new NotRegisteredException(Translation.of("msg_err_resident_doesnt_belong_to_any_town"));
-	}
+       /**
+        * Returns the resident's primary town or {@code null} when townless.
+        *
+        * @return Primary town or {@code null}.
+        */
+       @Nullable
+       public Town getPrimaryTown() {
+               return hasTown() ? towns.get(0) : null;
+       }
 	
 	/**
 	 * Relatively safe to use after confirming there is a town using
@@ -274,51 +299,55 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 	 * @return Town the resident belongs to or null.
 	 */
 	@Nullable 
-	public Town getTownOrNull() {
-		return town;
-	}
+       public Town getTownOrNull() {
+               return hasTown() ? towns.get(0) : null;
+       }
 
 	public void setTown(Town town) throws AlreadyRegisteredException {
 		setTown(town, true);
 	}
 
-	public void setTown(Town town, boolean updateJoinedAt) throws AlreadyRegisteredException {
+       public void setTown(Town town, boolean updateJoinedAt) throws AlreadyRegisteredException {
 
-		if (this.town == town)
-			return;
+               if (this.town == town)
+                       return;
 
-		Towny.getPlugin().deleteCache(this);
-		setTitle("");
-		setSurname("");
+               Towny.getPlugin().deleteCache(this);
+               setTitle("");
+               setSurname("");
 
-		if (town == null) {
-			this.town = null;
-			updatePerms();
-			return;
-		}
+               if (town == null) {
+                       this.town = null;
+                       this.towns.clear();
+                       updatePerms();
+                       return;
+               }
 
-		if (hasTown())
-			town.addResidentCheck(this);
+               if (hasTown())
+                       town.addResidentCheck(this);
 
-		this.town = town;
-		updatePerms();
-		town.addResident(this);
+               this.town = town;
+               if (towns.contains(town))
+                       towns.remove(town);
+               towns.add(0, town);
+               updatePerms();
+               town.addResident(this);
 
-		if (updateJoinedAt) {
-			setJoinedTownAt(System.currentTimeMillis());
-			BukkitTools.fireEvent(new TownAddResidentEvent(this, town));
-		}
-	}
+               if (updateJoinedAt) {
+                       setJoinedTownAt(System.currentTimeMillis());
+                       BukkitTools.fireEvent(new TownAddResidentEvent(this, town));
+               }
+       }
 	
 	public void removeTown() {
 		removeTown(false);
 	}
 
-	public void removeTown(boolean townDeleted) {
-		if (!hasTown())
-			return;
+       public void removeTown(boolean townDeleted) {
+               if (!hasTown())
+                       return;
 
-		Town town = this.town;
+               Town town = this.town;
 		
 		BukkitTools.fireEvent(new TownPreRemoveResidentEvent(this, town));
 
@@ -348,18 +377,38 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 			}
 		}
 
-		try {
-			setTown(null);
-			
-		} catch (AlreadyRegisteredException ignored) {
-			// It cannot reach the point in the code at which the exception can be thrown.
-		}
+               try {
+                       setTown(null);
+
+               } catch (AlreadyRegisteredException ignored) {
+                       // It cannot reach the point in the code at which the exception can be thrown.
+               }
 		
-		this.save();
-		
-		// Reset everyones cache permissions as this player losing their could affect multiple areas
-		Towny.getPlugin().resetCache();
-	}
+               this.save();
+
+               // Reset everyones cache permissions as this player losing their could affect multiple areas
+               Towny.getPlugin().resetCache();
+       }
+
+       /**
+        * Adds an additional town to this resident without changing the primary town.
+        *
+        * @param town Town to add
+        */
+       public void addTown(Town town) {
+               if (town == null || towns.contains(town))
+                       return;
+               towns.add(town);
+       }
+
+       /**
+        * Returns all towns this resident belongs to.
+        *
+        * @return immutable list of towns
+        */
+       public List<Town> getTowns() {
+               return Collections.unmodifiableList(towns);
+       }
 
 	public void setFriends(List<Resident> newFriends) {
 

@@ -562,46 +562,57 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				if (line != null && !line.isEmpty())
 					MetadataLoader.getInstance().deserializeMetadata(resident, line.trim());
 
-				line = keys.get("town");
-				if (line != null) {
-					Town town = null;
-					if (universe.hasTown(line)) {
-						town = universe.getTown(line);
-					} else if (universe.getReplacementNameMap().containsKey(line)) {
-						town = universe.getTown(universe.getReplacementNameMap().get(line));
-					} else {
-						TownyMessaging.sendErrorMsg(Translation.of("flatfile_err_resident_tried_load_invalid_town", resident.getName(), line));
-					}
-					
-					if (town != null) {
-						resident.setTown(town, false);
-						
-						line = keys.get("title");
-						if (line != null)
-							resident.setTitle(line);
-						
-						line = keys.get("surname");
-						if (line != null)
-							resident.setSurname(line);
-						
-						try {
-							line = keys.get("town-ranks");
-							if (line != null)
-								resident.setTownRanks(Arrays.asList((line.split(","))));
-						} catch (Exception ignored) {}
+                                line = keys.get("town");
+                                if (line != null) {
+                                        String[] townNames = line.split(",");
+                                        Town primary = null;
+                                        for (String townName : townNames) {
+                                                Town town = null;
+                                                if (universe.hasTown(townName)) {
+                                                        town = universe.getTown(townName);
+                                                } else if (universe.getReplacementNameMap().containsKey(townName)) {
+                                                        town = universe.getTown(universe.getReplacementNameMap().get(townName));
+                                                } else {
+                                                        TownyMessaging.sendErrorMsg(Translation.of("flatfile_err_resident_tried_load_invalid_town", resident.getName(), townName));
+                                                }
 
-						try {
-							line = keys.get("nation-ranks");
-							if (line != null)
-								resident.setNationRanks(Arrays.asList((line.split(","))));
-						} catch (Exception ignored) {}
+                                                if (town != null) {
+                                                        if (primary == null) {
+                                                                resident.setTown(town, false);
+                                                                primary = town;
+                                                        } else {
+                                                                resident.addTown(town);
+                                                        }
+                                                }
+                                        }
 
-						line = keys.get("joinedTownAt");
-						if (line != null) {
-							resident.setJoinedTownAt(Long.parseLong(line));
-						}
-					}
-				}
+                                        if (primary != null) {
+                                                line = keys.get("title");
+                                                if (line != null)
+                                                        resident.setTitle(line);
+
+                                                line = keys.get("surname");
+                                                if (line != null)
+                                                        resident.setSurname(line);
+
+                                                try {
+                                                        line = keys.get("town-ranks");
+                                                        if (line != null)
+                                                                resident.setTownRanks(Arrays.asList((line.split(","))));
+                                                } catch (Exception ignored) {}
+
+                                                try {
+                                                        line = keys.get("nation-ranks");
+                                                        if (line != null)
+                                                                resident.setNationRanks(Arrays.asList((line.split(","))));
+                                                } catch (Exception ignored) {}
+
+                                                line = keys.get("joinedTownAt");
+                                                if (line != null) {
+                                                        resident.setJoinedTownAt(Long.parseLong(line));
+                                                }
+                                        }
+                                }
 			} catch (Exception e) {
 				plugin.getLogger().log(Level.WARNING, Translation.of("flatfile_err_reading_resident_at_line", resident.getName(), line, resident.getName()), e);
 				return false;
@@ -2028,11 +2039,11 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 		if (!TownySettings.getDefaultResidentAbout().equals(resident.getAbout()))
 			list.add("about=" + resident.getAbout());
 
-		if (resident.hasTown()) {
-			list.add("town=" + resident.getTownOrNull().getName());
-			list.add("town-ranks=" + StringMgmt.join(resident.getTownRanksForSaving(), ","));
-			list.add("nation-ranks=" + StringMgmt.join(resident.getNationRanksForSaving(), ","));
-		}
+               if (resident.hasTown()) {
+                       list.add("town=" + resident.getTowns().stream().map(Town::getName).collect(Collectors.joining(",")));
+                       list.add("town-ranks=" + StringMgmt.join(resident.getTownRanksForSaving(), ","));
+                       list.add("nation-ranks=" + StringMgmt.join(resident.getNationRanksForSaving(), ","));
+               }
 
 		// Friends
 		list.add("friends=" + StringMgmt.join(resident.getFriends(), ","));
