@@ -412,7 +412,7 @@ public class ResidentCommand extends BaseCommand implements CommandExecutor {
 		if (newSplit[0].equalsIgnoreCase("pvp")) {
 			checkPermOrThrow(player, PermissionNodes.TOWNY_COMMAND_RESIDENT_TOGGLE_PVP.getNode());
 			
-			Town town = resident.getTownOrNull();
+                       Town town = resident.getPrimaryTown();
 			// Test to see if the pvp cooldown timer is active for the town this resident belongs to.
 			if (TownySettings.getPVPCoolDownTime() > 0 && town != null && !resident.isAdmin()) {
 				if (CooldownTimerTask.hasCooldown(town.getUUID().toString(), CooldownType.PVP))

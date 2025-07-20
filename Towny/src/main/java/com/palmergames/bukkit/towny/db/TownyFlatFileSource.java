@@ -2028,8 +2028,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 		if (!TownySettings.getDefaultResidentAbout().equals(resident.getAbout()))
 			list.add("about=" + resident.getAbout());
 
-		if (resident.hasTown()) {
-			list.add("town=" + resident.getTownOrNull().getName());
+               if (resident.hasTown()) {
+                       list.add("town=" + resident.getPrimaryTown().getName());
 			list.add("town-ranks=" + StringMgmt.join(resident.getTownRanksForSaving(), ","));
 			list.add("nation-ranks=" + StringMgmt.join(resident.getNationRanksForSaving(), ","));
 		}

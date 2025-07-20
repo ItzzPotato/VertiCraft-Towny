@@ -73,8 +73,8 @@ public class TownyAPI {
     	if (resident == null)
     		return null;
     	
-        if (resident.hasTown())
-			return resident.getTownOrNull().getSpawnOrNull();
+       if (resident.hasTown())
+                       return resident.getPrimaryTown().getSpawnOrNull();
 
 		return null;
     }
@@ -102,7 +102,7 @@ public class TownyAPI {
      */
     @Nullable
     public Town getResidentTownOrNull(Resident resident) {
-    	return resident.getTownOrNull();
+       return resident.getPrimaryTown();
     }
     
     /**
@@ -113,8 +113,8 @@ public class TownyAPI {
      */
     @Nullable
     public Nation getResidentNationOrNull(Resident resident) {
-    	if (resident.hasNation())
-    		return resident.getTownOrNull().getNationOrNull();
+       if (resident.hasNation())
+               return resident.getPrimaryTown().getNationOrNull();
     	return null;
     }
     
@@ -898,7 +898,7 @@ public class TownyAPI {
 	public Town getTown(@NotNull Player player) {
 		Resident resident = getResident(player);
 		
-		return resident == null ? null : resident.getTownOrNull();
+               return resident == null ? null : resident.getPrimaryTown();
 	}
 	
 	@Nullable
@@ -922,7 +922,7 @@ public class TownyAPI {
 		final boolean isMayor = resident.hasPermissionNode(PermissionNodes.TOWNY_COMMAND_PLOT_ASMAYOR.getNode());
 
 		if (townBlock.hasResident()) {
-			final boolean isMayorInTheirOwnTown = isMayor && resident.hasTown() && resident.getTownOrNull() == townBlock.getTownOrNull();
+                       final boolean isMayorInTheirOwnTown = isMayor && resident.hasTown() && resident.getTowns().contains(townBlock.getTownOrNull());
 			// Resident is either an admin, or the mayor (or equivalent) of the townblock, or the townblock's actual owner.
 			if (isAdmin || isMayorInTheirOwnTown || townBlock.hasResident(resident))
 				return;

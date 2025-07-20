@@ -417,9 +417,9 @@ public class Town extends Government implements TownBlockOwner {
 		if (hasResident(resident))
 			throw new AlreadyRegisteredException(Translation.of("msg_err_already_in_town", resident.getName(), getFormattedName()));
 		
-		final Town residentTown = resident.getTownOrNull();
-		if (residentTown != null && !this.equals(residentTown))
-			throw new AlreadyRegisteredException(Translation.of("msg_err_already_in_town", resident.getName(), residentTown.getFormattedName()));
+               final Town residentTown = resident.getPrimaryTown();
+               if (residentTown != null && !this.equals(residentTown))
+                       throw new AlreadyRegisteredException(Translation.of("msg_err_already_in_town", resident.getName(), residentTown.getFormattedName()));
 	}
 
 	public boolean isMayor(Resident resident) {
@@ -1253,9 +1253,9 @@ public class Town extends Government implements TownBlockOwner {
 		if (hasOutlaw(resident))
 			throw new AlreadyRegisteredException(Translation.of("msg_err_resident_already_an_outlaw"));
 		
-		final Town residentTown = resident.getTownOrNull();
-		if (this.equals(residentTown))
-			throw new AlreadyRegisteredException(Translation.of("msg_err_not_outlaw_in_your_town"));
+               final Town residentTown = resident.getPrimaryTown();
+               if (this.equals(residentTown))
+                       throw new AlreadyRegisteredException(Translation.of("msg_err_not_outlaw_in_your_town"));
 	}
 	
 	public void removeOutlaw(Resident resident) {
@@ -1675,8 +1675,7 @@ public class Town extends Government implements TownBlockOwner {
 	}
 	
 	public boolean hasTrustedResident(Resident resident) {
-		Town residentsTown = resident.getTownOrNull();
-		return trustedResidents.contains(resident) || (residentsTown != null && this.hasTrustedTown(residentsTown));
+               return trustedResidents.contains(resident) || resident.getTowns().stream().anyMatch(this::hasTrustedTown);
 	}
 	
 	public void addTrustedResident(Resident resident) {
