@@ -735,12 +735,12 @@ public final class TownySQLSource extends TownyDatabaseHandler {
 								universe.unregisterResident(olderRes);
 							} catch (NotRegisteredException ignored) {}
 							// Check if the older resident is a part of a town
-							if (olderRes.hasTown()) {
-								try {
-									// Resident#removeTown saves the resident, so we can't use it.
-									olderRes.getTown().removeResident(olderRes);
-								} catch (NotRegisteredException ignored) {}
-							}
+                                                       if (olderRes.hasTown()) {
+                                                               try {
+                                                                       // Resident#removeTown saves the resident, so we can't use it.
+                                                                       olderRes.getPrimaryTown().removeResident(olderRes);
+                                                               } catch (NotRegisteredException ignored) {}
+                                                       }
 							deleteResident(olderRes);					
 						} else {
 							TownyMessaging.sendDebugMsg("Deleting resident : " + resident.getName() + " which is a dupe of " + olderRes.getName());
@@ -850,13 +850,12 @@ public final class TownySQLSource extends TownyDatabaseHandler {
 
 			line = rs.getString("town");
 			if ((line != null) && (!line.isEmpty())) {
-				Town town = universe.getTown(line);
-				if (town == null) {
-					TownyMessaging.sendErrorMsg("Loading Error: " + resident.getName() + " tried to load the town " + line + " which is invalid, removing town from the resident.");
-					resident.setTown(null, false);
-				}
-				else {
-					resident.setTown(town, false);
+                               Town town = universe.getTown(line);
+                               if (town == null) {
+                                       TownyMessaging.sendErrorMsg("Loading Error: " + resident.getName() + " tried to load the town " + line + " which is invalid, removing town from the resident.");
+                               }
+                               else {
+                                       resident.addTown(town, false);
 
 					try {
 						resident.setTitle(rs.getString("title"));
@@ -2311,9 +2310,9 @@ public final class TownySQLSource extends TownyDatabaseHandler {
 			
 			if (!TownySettings.getDefaultResidentAbout().equals(resident.getAbout()))
 				res_hm.put("about", resident.getAbout());
-			res_hm.put("town", resident.hasTown() ? resident.getTown().getName() : "");
-			res_hm.put("town-ranks", resident.hasTown() ? StringMgmt.join(resident.getTownRanksForSaving(), "#") : "");
-			res_hm.put("nation-ranks", resident.hasTown() ? StringMgmt.join(resident.getNationRanksForSaving(), "#") : "");
+                       res_hm.put("town", resident.hasTown() ? resident.getPrimaryTown().getName() : "");
+                       res_hm.put("town-ranks", resident.hasTown() ? StringMgmt.join(resident.getTownRanksForSaving(), "#") : "");
+                       res_hm.put("nation-ranks", resident.hasTown() ? StringMgmt.join(resident.getNationRanksForSaving(), "#") : "");
 			res_hm.put("friends", StringMgmt.join(resident.getFriends(), "#"));
 			res_hm.put("protectionStatus", resident.getPermissions().toString().replaceAll(",", "#"));
 

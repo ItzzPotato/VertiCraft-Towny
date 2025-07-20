@@ -278,7 +278,7 @@ public class TownyPerms {
 		Set<String> permList = new HashSet<>(getDefault());
 		
 		//Check for town membership
-		final Town town = resident.getTownOrNull();
+		final Town town = resident.getPrimaryTownOrNull();
 		if (town != null) {
 			permList.addAll(getTownDefault(town.getName().toLowerCase(Locale.ROOT)));
 			
@@ -321,8 +321,8 @@ public class TownyPerms {
 		LinkedHashMap<String, Boolean> newPerms = new LinkedHashMap<String, Boolean>();
 
 		for (String permission : playerPermArray) {
-			if (permission.contains("{townname}") && resident.getTownOrNull() != null)
-				permission = permission.replace("{townname}", resident.getTownOrNull().getName().toLowerCase(Locale.ROOT));
+			if (permission.contains("{townname}") && resident.getPrimaryTownOrNull() != null)
+				permission = permission.replace("{townname}", resident.getPrimaryTownOrNull().getName().toLowerCase(Locale.ROOT));
 			
 			if (permission.contains("{nationname}") && resident.getNationOrNull() != null)
 				permission = permission.replace("{nationname}", resident.getNationOrNull().getName().toLowerCase(Locale.ROOT));

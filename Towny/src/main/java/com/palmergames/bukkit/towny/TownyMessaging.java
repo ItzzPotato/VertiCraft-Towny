@@ -927,7 +927,7 @@ public class TownyMessaging {
 	 * @param message The translatable message to be sent to the resident and/or their town.
 	 */
 	public static void sendPrefixedTownMessage(Resident resident, Translatable message) {
-		Town town = resident.getTownOrNull();
+		Town town = resident.getPrimaryTownOrNull();
 		
 		if (town == null)
 			sendMsg(resident, message);

@@ -197,19 +197,19 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 		switch (identifier) {
 		case "town": // %townyadvanced_town%
 			if (resident.hasTown())
-				town = String.format(TownySettings.getPAPIFormattingTown(), resident.getTownOrNull().getName());
+				town = String.format(TownySettings.getPAPIFormattingTown(), resident.getPrimaryTownOrNull().getName());
 			return StringMgmt.remUnderscore(town);
 		case "town_unformatted": // %townyadvanced_town_unformatted%
 			if (resident.hasTown())
-				town = resident.getTownOrNull().getName();
+				town = resident.getPrimaryTownOrNull().getName();
 			return town;
 		case "town_formatted": // %townyadvanced_town_formatted%
 			if (resident.hasTown())
-				town = String.format(TownySettings.getPAPIFormattingTown(), resident.getTownOrNull().getFormattedName());
+				town = String.format(TownySettings.getPAPIFormattingTown(), resident.getPrimaryTownOrNull().getFormattedName());
 			return StringMgmt.remUnderscore(town);
 		case "town_formatted_with_town_minimessage_colour": // %townyadvanced_town_formatted_with_town_minimessage_colour%
 			if (resident.hasTown()) {
-				Town residentTown = resident.getTownOrNull();
+				Town residentTown = resident.getPrimaryTownOrNull();
 				String townHexValue = residentTown.getMapColorHexCode();
 				if (townHexValue != null)
 					town = String.format(TownySettings.getPAPIFormattingTown(), "<#"+townHexValue+">" + residentTown.getFormattedName());
@@ -237,30 +237,30 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return StringMgmt.remUnderscore(nation);
 		case "town_balance": // %townyadvanced_town_balance%
 			if (resident.hasTown() && TownyEconomyHandler.isActive())
-				balance = getMoney(resident.getTownOrNull().getAccount().getCachedBalance());
+				balance = getMoney(resident.getPrimaryTownOrNull().getAccount().getCachedBalance());
 			return balance;
         case "town_balance_unformatted": // %townyadvanced_town_balance_unformatted%
 			if (resident.hasTown() && TownyEconomyHandler.isActive())
-				balance = String.valueOf(resident.getTownOrNull().getAccount().getCachedBalance());
+				balance = String.valueOf(resident.getPrimaryTownOrNull().getAccount().getCachedBalance());
             return balance;
 		case "nation_balance": // %townyadvanced_nation_balance%
 			if (resident.hasNation() && TownyEconomyHandler.isActive())
-				balance = getMoney(resident.getTownOrNull().getNationOrNull().getAccount().getCachedBalance());
+				balance = getMoney(resident.getPrimaryTownOrNull().getNationOrNull().getAccount().getCachedBalance());
 			return balance;
         case "nation_balance_unformatted": // %townyadvanced_nation_balance_unformatted%
 			if (resident.hasNation() && TownyEconomyHandler.isActive())
-				balance = String.valueOf(resident.getTownOrNull().getNationOrNull().getAccount().getCachedBalance());
+				balance = String.valueOf(resident.getPrimaryTownOrNull().getNationOrNull().getAccount().getCachedBalance());
             return balance;
 		case "town_tag": // %townyadvanced_town_tag%
 			if (resident.hasTown())
-				tag = String.format(TownySettings.getPAPIFormattingTown(), resident.getTownOrNull().getTag());
+				tag = String.format(TownySettings.getPAPIFormattingTown(), resident.getPrimaryTownOrNull().getTag());
 			return tag;
 		case "town_tag_override": // %townyadvanced_town_tag_override%
 			if (resident.hasTown()) {
-				if (resident.getTownOrNull().hasTag())
-					tag = String.format(TownySettings.getPAPIFormattingTown(), resident.getTownOrNull().getTag());
+				if (resident.getPrimaryTownOrNull().hasTag())
+					tag = String.format(TownySettings.getPAPIFormattingTown(), resident.getPrimaryTownOrNull().getTag());
 				else
-					tag = StringMgmt.remUnderscore(String.format(TownySettings.getPAPIFormattingTown(), resident.getTownOrNull().getName()));
+					tag = StringMgmt.remUnderscore(String.format(TownySettings.getPAPIFormattingTown(), resident.getPrimaryTownOrNull().getName()));
 			}
 			return tag;
 		case "nation_tag": // %townyadvanced_nation_tag%
@@ -279,8 +279,8 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return tag;
 		case "towny_tag": // %townyadvanced_towny_tag%
 			if (resident.hasTown()) {
-				if (resident.getTownOrNull().hasTag())
-					town = resident.getTownOrNull().getTag();
+				if (resident.getPrimaryTownOrNull().hasTag())
+					town = resident.getPrimaryTownOrNull().getTag();
 				if (resident.hasNation() && resident.getNationOrNull().hasTag())
 					nation = resident.getNationOrNull().getTag();
 			}
@@ -291,7 +291,7 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return tag;
 		case "towny_formatted": // %townyadvanced_towny_formatted%
 			if (resident.hasTown()) {
-				town = resident.getTownOrNull().getFormattedName();
+				town = resident.getPrimaryTownOrNull().getFormattedName();
 				if (resident.hasNation())
 					nation = resident.getNationOrNull().getFormattedName();
 			}
@@ -302,10 +302,10 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return tag;
 		case "towny_tag_formatted": // %townyadvanced_towny_tag_formatted%
 			if (resident.hasTown()) {
-				if (resident.getTownOrNull().hasTag())
-					town = resident.getTownOrNull().getTag();
+				if (resident.getPrimaryTownOrNull().hasTag())
+					town = resident.getPrimaryTownOrNull().getTag();
 				else
-					town = resident.getTownOrNull().getFormattedName();
+					town = resident.getPrimaryTownOrNull().getFormattedName();
 				if (resident.hasNation()) {
 					if (resident.getNationOrNull().hasTag())
 						nation = resident.getNationOrNull().getTag();
@@ -320,10 +320,10 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return tag;
 		case "towny_tag_override": // %townyadvanced_towny_tag_override%
 			if (resident.hasTown()) {
-				if (resident.getTownOrNull().hasTag())
-					town = resident.getTownOrNull().getTag();
+				if (resident.getPrimaryTownOrNull().hasTag())
+					town = resident.getPrimaryTownOrNull().getTag();
 				else
-					town = StringMgmt.remUnderscore(resident.getTownOrNull().getName());
+					town = StringMgmt.remUnderscore(resident.getPrimaryTownOrNull().getName());
 				if (resident.hasNation()) {
 					if (resident.getNationOrNull().hasTag())
 						nation = resident.getNationOrNull().getTag();
@@ -338,11 +338,11 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return tag;
 		case "towny_tag_override_with_minimessage_colour": // %townyadvanced_towny_tag_override_with_minimessage_colour%
 			if (resident.hasTown()) {
-				if (resident.getTownOrNull().hasTag())
-					town = resident.getTownOrNull().getTag();
+				if (resident.getPrimaryTownOrNull().hasTag())
+					town = resident.getPrimaryTownOrNull().getTag();
 				else
-					town = StringMgmt.remUnderscore(resident.getTownOrNull().getName());
-				String townHexColour = resident.getTownOrNull().getMapColorHexCode();
+					town = StringMgmt.remUnderscore(resident.getPrimaryTownOrNull().getName());
+				String townHexColour = resident.getPrimaryTownOrNull().getMapColorHexCode();
 				if (townHexColour != null)
 					town = "<#"+townHexColour+">" + town;
 
@@ -420,37 +420,37 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return colour;
 		case "town_residents_amount": // %townyadvanced_town_residents_amount%
 			if (resident.hasTown()) {
-				amount = String.valueOf(resident.getTownOrNull().getNumResidents());
+				amount = String.valueOf(resident.getPrimaryTownOrNull().getNumResidents());
 			}
 			return amount;
 		case "town_residents_online": // %townyadvanced_town_residents_online%
 			if (resident.hasTown()) {
-				amount = String.valueOf(TownyAPI.getInstance().getOnlinePlayers(resident.getTownOrNull()).size());
+				amount = String.valueOf(TownyAPI.getInstance().getOnlinePlayers(resident.getPrimaryTownOrNull()).size());
 			}
 			return amount;
 		case "town_townblocks_used": // %townyadvanced_town_townblocks_used%
 			if (resident.hasTown()) {
-				amount = String.valueOf(resident.getTownOrNull().getTownBlocks().size());
+				amount = String.valueOf(resident.getPrimaryTownOrNull().getTownBlocks().size());
 			}
 			return amount;
 		case "town_townblocks_bought": // %townyadvanced_town_townblocks_bought%
 			if (resident.hasTown()) {
-				amount = String.valueOf(resident.getTownOrNull().getPurchasedBlocks());
+				amount = String.valueOf(resident.getPrimaryTownOrNull().getPurchasedBlocks());
 			}
 			return amount;
 		case "town_townblocks_bonus": // %townyadvanced_town_townblocks_bonus%
 			if (resident.hasTown()) {
-				amount = String.valueOf(resident.getTownOrNull().getBonusBlocks());
+				amount = String.valueOf(resident.getPrimaryTownOrNull().getBonusBlocks());
 			}
 			return amount;
 		case "town_townblocks_maximum": // %townyadvanced_town_townblocks_maximum%
 			if (resident.hasTown()) {
-				amount = resident.getTownOrNull().getMaxTownBlocksAsAString();
+				amount = resident.getPrimaryTownOrNull().getMaxTownBlocksAsAString();
 			}
 			return amount;
 		case "town_townblocks_natural_maximum": // %townyadvanced_town_townblocks_natural_maximum%
 			if (resident.hasTown()) {
-				Town restown = resident.getTownOrNull();
+				Town restown = resident.getPrimaryTownOrNull();
 				amount = restown.hasUnlimitedClaims()
 					? restown.getMaxTownBlocksAsAString()
 					: String.valueOf(restown.getMaxTownBlocks() - restown.getBonusBlocks() - restown.getPurchasedBlocks());
@@ -458,7 +458,7 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return amount;
 		case "town_mayor": // %townyadvanced_town_mayor%
 			if (resident.hasTown()) {
-				name = resident.getTownOrNull().getMayor().getName();
+				name = resident.getPrimaryTownOrNull().getMayor().getName();
 			}
 			return name;
 		case "nation_king": // %townyadvanced_nation_king%
@@ -490,7 +490,7 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return String.valueOf(resident.getTaxOwing(true));
 		case "daily_town_upkeep": // %townyadvanced_daily_town_upkeep%
 			if (resident.hasTown()) {
-				cost = TownySettings.getTownUpkeepCost(resident.getTownOrNull());
+				cost = TownySettings.getTownUpkeepCost(resident.getPrimaryTownOrNull());
 			}
 			return getMoney(cost);
 		case "daily_town_per_plot_upkeep": // %townyadvanced_daily_town_per_plot_upkeep%
@@ -499,7 +499,7 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return getMoney(TownySettings.getUpkeepPenalty());
 		case "daily_town_upkeep_reduction_from_town_level": // %townyadvanced_daily_town_upkeep_reduction_from_town_level%
 			cost = resident.hasTown() 
-				? resident.getTownOrNull().getTownLevel().upkeepModifier()
+				? resident.getPrimaryTownOrNull().getTownLevel().upkeepModifier()
 				: 1.0;
 			return cost == 1.0 ? "0" : String.valueOf(dFormat.format((1.0 - cost) * 100));
 		case "daily_town_upkeep_reduction_from_nation_level": // %townyadvanced_daily_town_upkeep_reduction_from_nation_level%
@@ -521,8 +521,8 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return cost == 1.0 ? "0" : String.valueOf(dFormat.format((1.0 - cost) * 100));
 		case "daily_town_tax": // %townyadvanced_daily_town_tax%
 			if (resident.hasTown()) {
-				cost = resident.getTownOrNull().getTaxes();
-				percentage = resident.getTownOrNull().isTaxPercentage();
+				cost = resident.getPrimaryTownOrNull().getTaxes();
+				percentage = resident.getPrimaryTownOrNull().isTaxPercentage();
 			}
 			return String.valueOf(cost) + (percentage ? "%" : "");
 		case "daily_nation_tax": // %townyadvanced_daily_nation_tax%
@@ -555,7 +555,7 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return getMoney(TownySettings.getOutpostCost());
 		case "townblock_next_claim_price": // %townyadvanced_townblock_next_claim_price%
 			if (resident.hasTown())
-				cost = resident.getTownOrNull().getTownBlockCost();
+				cost = resident.getPrimaryTownOrNull().getTownBlockCost();
 			else
 				cost = TownySettings.getClaimPrice();
 			return getMoney(cost);
@@ -566,7 +566,7 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return String.valueOf(resident.hasNation());
 		case "nation_tag_town_formatted": // %townyadvanced_nation_tag_town_formatted%
 			if (resident.hasTown()) {
-				town = resident.getTownOrNull().getFormattedName();
+				town = resident.getPrimaryTownOrNull().getFormattedName();
 				if (resident.hasNation() && resident.getNationOrNull().hasTag())
 					nation = resident.getNationOrNull().getTag();
 			}
@@ -577,7 +577,7 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return tag;
 		case "nation_tag_town_name": // %townyadvanced_nation_tag_town_name%
 			if (resident.hasTown()) {
-				town = resident.getTownOrNull().getName();
+				town = resident.getPrimaryTownOrNull().getName();
 				if (resident.hasNation() && resident.getNationOrNull().hasTag())
 					nation = resident.getNationOrNull().getTag();
 			}
@@ -588,7 +588,7 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return tag;
 		case "town_map_color_hex": // %townyadvanced_town_map_color_hex%
 			if (resident.hasTown()){
-				hex = resident.getTownOrNull().getMapColorHexCode();
+				hex = resident.getPrimaryTownOrNull().getMapColorHexCode();
 				if (!hex.isEmpty())
 					hex = "#"+hex;
 			}
@@ -602,7 +602,7 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			return hex;
 		case "town_map_color_minimessage_hex": // %townyadvanced_town_map_color_minimessage_hex%
 			if (resident.hasTown()){
-				hex = resident.getTownOrNull().getMapColorHexCode();
+				hex = resident.getPrimaryTownOrNull().getMapColorHexCode();
 				if (!hex.isEmpty())
 					hex = "<#"+hex+">";
 			}
@@ -640,9 +640,9 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 			}
 			return tag;
 		case "town_prefix": // %townyadvanced_town_prefix%
-			return resident.hasTown() ? TownySettings.getTownPrefix(resident.getTownOrNull()) : "";
+			return resident.hasTown() ? TownySettings.getTownPrefix(resident.getPrimaryTownOrNull()) : "";
 		case "town_postfix": // %townyadvanced_town_postfix%
-			return resident.hasTown() ? TownySettings.getTownPostfix(resident.getTownOrNull()) : "";
+			return resident.hasTown() ? TownySettings.getTownPostfix(resident.getPrimaryTownOrNull()) : "";
 		case "nation_prefix": // %townyadvanced_nation_prefix%
 			return resident.hasNation() ? TownySettings.getNationPrefix(resident.getNationOrNull()) : "";
 		case "nation_postfix": // %townyadvanced_nation_postfix%
@@ -652,13 +652,13 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 		case "is_nation_peaceful": // %townyadvanced_is_nation_peaceful%	
 			return resident.hasNation() ? (resident.getNationOrNull().isNeutral() ? Translation.of("status_town_title_peaceful"): "") : "";
 		case "is_town_peaceful": // %townyadvanced_is_town_peaceful%	
-			return resident.hasTown() ? (resident.getTownOrNull().isNeutral() ? Translation.of("status_town_title_peaceful"): "") : "";
+			return resident.hasTown() ? (resident.getPrimaryTownOrNull().isNeutral() ? Translation.of("status_town_title_peaceful"): "") : "";
 		case "is_town_public": // %townyadvanced_is_town_public%
-			return resident.hasTown() ? (resident.getTownOrNull().isPublic() ? Translation.of("status_public") : "") : "";
+			return resident.hasTown() ? (resident.getPrimaryTownOrNull().isPublic() ? Translation.of("status_public") : "") : "";
 		case "is_town_open": // %townyadvanced_is_town_open%
-			return resident.hasTown() ? (resident.getTownOrNull().isOpen() ? Translation.of("status_title_open") : "") : "";
+			return resident.hasTown() ? (resident.getPrimaryTownOrNull().isOpen() ? Translation.of("status_title_open") : "") : "";
 		case "town_board": // %townyadvanced_town_board%
-			return resident.hasTown() ? resident.getTownOrNull().getBoard() : "";
+			return resident.hasTown() ? resident.getPrimaryTownOrNull().getBoard() : "";
 		case "nation_board": // %townyadvanced_nation_board%
 			return resident.hasTown() ? (resident.hasNation() ? resident.getNationOrNull().getBoard() : "") : "";
 		case "time_until_new_day_formatted": {// %townyadvanced_time_until_new_day_formatted%
@@ -686,7 +686,7 @@ public class TownyPlaceholderExpansion extends PlaceholderExpansion implements R
 				? ""
 				: resident.hasNation()
 					? String.format(TownySettings.getPAPIFormattingNation(), StringMgmt.remUnderscore(resident.getNationOrNull().getName()))
-					: String.format(TownySettings.getPAPIFormattingTown(), StringMgmt.remUnderscore(resident.getTownOrNull().getName()));
+					: String.format(TownySettings.getPAPIFormattingTown(), StringMgmt.remUnderscore(resident.getPrimaryTownOrNull().getName()));
 
 		case "resident_join_date_unformatted": // %townyadvanced_resident_join_date_unformatted%
 			return String.valueOf(resident.getRegistered());

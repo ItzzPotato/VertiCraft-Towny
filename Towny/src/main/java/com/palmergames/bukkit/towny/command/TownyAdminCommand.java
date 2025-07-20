@@ -1284,7 +1284,7 @@ public class TownyAdminCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(Translatable.of("msg_err_townadmintownrank_wrong_town"));
 			if (resident.isMayor())
 				throw new TownyException(Translatable.of("msg_you_cannot_kick_this_resident", resident.getName()));
-			resident.removeTown();
+                       resident.removeTown(town);
 			TownyMessaging.sendPrefixedTownMessage(town, Translatable.of("msg_kicked", "Console", resident.getName()));
 			TownyMessaging.sendMsg(sender, Translatable.of("msg_kicked", "You", resident.getName()));
 			if (resident.isOnline())

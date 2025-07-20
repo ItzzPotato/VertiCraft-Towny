@@ -315,8 +315,9 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		for (Resident toCheck : toSave)
 			saveResident(toCheck);
 		
-		if (resident.hasTown() && resident.getTownOrNull() != null)
-			resident.removeTown();
+               if (resident.hasTown() && resident.getPrimaryTownOrNull() != null)
+                       for (Town t : new ArrayList<>(resident.getTowns()))
+                               resident.removeTown(t);
 
 		if (resident.hasUUID() && !resident.isNPC())
 			saveHibernatedResident(resident.getUUID(), resident.getRegistered());
@@ -430,8 +431,8 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 			town.getAccount().removeAccount();
 
 		for (Resident resident : toSave) {
-			ResidentModeHandler.resetModes(resident, false);
-			resident.removeTown(true);
+                       ResidentModeHandler.resetModes(resident, false);
+                       resident.removeTown(town, true);
 		}
 		
 		// Look for residents inside of this town's jail(s) and free them, more than 
@@ -852,8 +853,8 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 			}
 			
 			// Save the town if the player was the mayor.
-			if (resident.isMayor())
-				saveTown(resident.getTown());
+                       if (resident.isMayor())
+                               saveTown(resident.getPrimaryTown());
 			
 			// Make an oldResident with the previous name for use in searching friends/outlawlists/deleting the old resident file.
 			Resident oldResident = new Resident(oldName);
@@ -1203,15 +1204,15 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		List<Resident> residents = new ArrayList<Resident>(mergeFrom.getResidents());
 		for (Resident resident : residents) {
 			try {
-				if (mergeInto.hasOutlaw(resident)) {
-					resident.removeTown();
-					continue;
-				}
+                               if (mergeInto.hasOutlaw(resident)) {
+                                       resident.removeTown(resident.getPrimaryTownOrNull());
+                                       continue;
+                               }
 				
 				List<String> nationRanks = new ArrayList<String>(resident.getNationRanks());
 				
-				resident.removeTown();
-				resident.setTown(mergeInto);
+                               resident.removeTown(resident.getPrimaryTownOrNull());
+                               resident.addTown(mergeInto);
 
 				if (isSameNation) {
 					for (String rank : nationRanks)

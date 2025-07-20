@@ -519,7 +519,7 @@ public class DailyTimerTask extends TownyTimerTask {
 		if (!resident.isMayor()) {
 			TownyMessaging.sendMsg(resident, Translatable.of("msg_you_couldnt_pay_town_tax", prettyMoney(tax), town.getFormattedName()));
 			// remove this resident from the town, they cannot pay the town tax.
-			resident.removeTown();
+                       resident.removeTown(town);
 		}
 
 		return false;

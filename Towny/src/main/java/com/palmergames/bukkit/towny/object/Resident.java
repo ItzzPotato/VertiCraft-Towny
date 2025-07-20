@@ -58,7 +58,7 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 	private List<Resident> friends = new ArrayList<>();
 	// private List<Object[][][]> regenUndo = new ArrayList<>(); // Feature is disabled as of MC 1.13, maybe it'll come back.
 	private UUID uuid = null;
-	private List<Town> towns = new ArrayList<>()
+       private List<Town> towns = new ArrayList<>();
 	private long lastOnline;
 	private long registered;
 	private long joinedTownAt;
@@ -239,33 +239,33 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 		return about;
 	}
 
-	public boolean isKing() {
+       public boolean isKing() {
 
-		return hasNation() && town.getNationOrNull().isKing(this);
-	}
+               return towns.stream().anyMatch(t -> t.hasNation() && t.getNationOrNull().isKing(this));
+       }
 
-	public boolean isMayor() {
+       public boolean isMayor() {
 
-		return hasTown() && town.isMayor(this);
-	}
+               return towns.stream().anyMatch(t -> t.isMayor(this));
+       }
 
-	public boolean hasTown() {
+       public boolean hasTown() {
 
-		return town != null;
-	}
+               return !towns.isEmpty();
+       }
 
-	public boolean hasNation() {
+       public boolean hasNation() {
 
-		return hasTown() && town.hasNation();
-	}
+               return towns.stream().anyMatch(Town::hasNation);
+       }
 
-	public Town getTown() throws NotRegisteredException {
+       public Town getPrimaryTown() throws NotRegisteredException {
 
-		if (hasTown())
-			return town;
-		else
-			throw new NotRegisteredException(Translation.of("msg_err_resident_doesnt_belong_to_any_town"));
-	}
+               if (hasTown())
+                       return towns.get(0);
+               else
+                       throw new NotRegisteredException(Translation.of("msg_err_resident_doesnt_belong_to_any_town"));
+       }
 	
 	/**
 	 * Relatively safe to use after confirming there is a town using
@@ -273,36 +273,31 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 	 * 
 	 * @return Town the resident belongs to or null.
 	 */
-	@Nullable 
-	public Town getTownOrNull() {
-		return town;
-	}
+       @Nullable
+       public Town getPrimaryTownOrNull() {
+               return towns.isEmpty() ? null : towns.get(0);
+       }
 
-	public void setTown(Town town) throws AlreadyRegisteredException {
-		setTown(town, true);
-	}
+       public List<Town> getTowns() {
+               return Collections.unmodifiableList(towns);
+       }
 
-	public void setTown(Town town, boolean updateJoinedAt) throws AlreadyRegisteredException {
+       public void addTown(Town town) throws AlreadyRegisteredException {
+               addTown(town, true);
+       }
 
-		if (this.town == town)
-			return;
+       public void addTown(Town town, boolean updateJoinedAt) throws AlreadyRegisteredException {
 
-		Towny.getPlugin().deleteCache(this);
-		setTitle("");
-		setSurname("");
+               if (town == null || towns.contains(town))
+                       return;
 
-		if (town == null) {
-			this.town = null;
-			updatePerms();
-			return;
-		}
+               Towny.getPlugin().deleteCache(this);
+               setTitle("");
+               setSurname("");
 
-		if (hasTown())
-			town.addResidentCheck(this);
-
-		this.town = town;
-		updatePerms();
-		town.addResident(this);
+               towns.add(town);
+               updatePerms();
+               town.addResident(this);
 
 		if (updateJoinedAt) {
 			setJoinedTownAt(System.currentTimeMillis());
@@ -310,15 +305,13 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 		}
 	}
 	
-	public void removeTown() {
-		removeTown(false);
-	}
+       public void removeTown(Town town) {
+               removeTown(town, false);
+       }
 
-	public void removeTown(boolean townDeleted) {
-		if (!hasTown())
-			return;
-
-		Town town = this.town;
+       public void removeTown(Town town, boolean townDeleted) {
+               if (town == null || !towns.contains(town))
+                       return;
 		
 		BukkitTools.fireEvent(new TownPreRemoveResidentEvent(this, town));
 
@@ -348,12 +341,8 @@ public class Resident extends TownyObject implements InviteReceiver, EconomyHand
 			}
 		}
 
-		try {
-			setTown(null);
-			
-		} catch (AlreadyRegisteredException ignored) {
-			// It cannot reach the point in the code at which the exception can be thrown.
-		}
+               towns.remove(town);
+               updatePerms();
 		
 		this.save();
 		

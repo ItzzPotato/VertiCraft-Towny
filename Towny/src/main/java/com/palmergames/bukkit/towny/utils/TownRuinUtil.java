@@ -95,9 +95,9 @@ public class TownRuinUtil {
 		
 		//Set NPC mayor, otherwise mayor of ruined town cannot leave until full deletion 
 		Resident resident = ResidentUtil.createAndGetNPCResident();
-		try {
-			resident.setTown(town);
-		} catch (AlreadyRegisteredException ignored) {}
+               try {
+                       resident.addTown(town);
+               } catch (AlreadyRegisteredException ignored) {}
 		resident.save();
 		setMayor(town, resident);
 		town.setHasUpkeep(false);
@@ -150,7 +150,7 @@ public class TownRuinUtil {
 	public static void processRuinedTownReclaimRequest(Player player) {
 		try {
 			final Resident resident = TownyUniverse.getInstance().getResident(player.getUniqueId());
-			final Town town = resident != null ? resident.getTownOrNull() : null;
+			final Town town = resident != null ? resident.getPrimaryTownOrNull() : null;
 
 			if (town == null)
 				throw new TownyException(Translatable.of("msg_err_dont_belong_town"));
@@ -213,7 +213,7 @@ public class TownRuinUtil {
 		town.setMayor(newMayor);
 		if (oldMayor != null && oldMayor.isNPC()) {
 			// Delete the resident if the old mayor was an NPC.
-			oldMayor.removeTown();
+                       oldMayor.removeTown(town);
 			TownyUniverse.getInstance().getDataSource().removeResident(oldMayor);
 			// set upkeep again
 			town.setHasUpkeep(true);

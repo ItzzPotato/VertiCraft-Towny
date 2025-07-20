@@ -31,7 +31,7 @@ public class TownType extends ChatType {
 		if (resident == null || !resident.hasTown())
 			return recipients;
 		
-		final UUID town = resident.getTownOrNull().getUUID();
+		final UUID town = resident.getPrimaryTownOrNull().getUUID();
 
 		Collection<Player> newRecipients = new HashSet<>();
 

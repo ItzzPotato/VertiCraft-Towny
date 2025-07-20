@@ -182,7 +182,7 @@ public class TownyCommand extends BaseCommand implements CommandExecutor {
 						Resident resident = TownyAPI.getInstance().getResident(player);
 						
 						if (resident != null)
-							town = resident.getTownOrNull();
+							town = resident.getPrimaryTownOrNull();
 					}
 
 					for (String line : getTownyPrices(town, Translator.locale(sender)))

@@ -573,8 +573,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 						TownyMessaging.sendErrorMsg(Translation.of("flatfile_err_resident_tried_load_invalid_town", resident.getName(), line));
 					}
 					
-					if (town != null) {
-						resident.setTown(town, false);
+                                       if (town != null) {
+                                               resident.addTown(town, false);
 						
 						line = keys.get("title");
 						if (line != null)
@@ -2029,7 +2029,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			list.add("about=" + resident.getAbout());
 
 		if (resident.hasTown()) {
-			list.add("town=" + resident.getTownOrNull().getName());
+			list.add("town=" + resident.getPrimaryTownOrNull().getName());
 			list.add("town-ranks=" + StringMgmt.join(resident.getTownRanksForSaving(), ","));
 			list.add("nation-ranks=" + StringMgmt.join(resident.getNationRanksForSaving(), ","));
 		}

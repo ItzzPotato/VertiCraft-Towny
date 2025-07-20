@@ -79,7 +79,7 @@ public class SpawnUtil {
 
 		// Set up town and nation variables.
 		final Town town = switch (spawnType) {
-			case RESIDENT -> resident.getTownOrNull();
+			case RESIDENT -> resident.getPrimaryTownOrNull();
 			case TOWN -> (Town) townyObject;
 			default -> null;
 		};
@@ -288,11 +288,11 @@ public class SpawnUtil {
 			// Arguments were used.
 			if (TownySettings.trustedResidentsGetToSpawnToTown() && 
 					(town.hasTrustedResident(resident) || 
-							(resident.hasTown() && town.hasTrustedTown(resident.getTownOrNull())))) {
+							(resident.hasTown() && town.hasTrustedTown(resident.getPrimaryTownOrNull())))) {
 				townSpawnLevel = TownSpawnLevel.TOWN_RESIDENT;
 			} else if (!resident.hasTown()) {
 				townSpawnLevel = TownSpawnLevel.UNAFFILIATED;
-			} else if (resident.getTownOrNull() == town) {
+			} else if (resident.getPrimaryTownOrNull() == town) {
 				townSpawnLevel = outpost ? TownSpawnLevel.TOWN_RESIDENT_OUTPOST : TownSpawnLevel.TOWN_RESIDENT;
 			} else if (resident.hasNation() && town.hasNation()) {
 				Nation playerNation = resident.getNationOrNull();
@@ -664,11 +664,11 @@ public class SpawnUtil {
 					throw new TownyException(Translatable.of("msg_err_x_spawn_disallowed_from_x", "RTP", Translatable.of("msg_a_town_you_are_outlawed_in")));
 				if (resident.hasTown() && townAtPlayerLoc.hasNation()) {
 					Nation townLocNation = townAtPlayerLoc.getNationOrNull();
-					if (townLocNation.hasSanctionedTown(resident.getTownOrNull()))
+					if (townLocNation.hasSanctionedTown(resident.getPrimaryTownOrNull()))
 						throw new TownyException(Translatable.of("msg_err_cannot_nation_spawn_your_town_is_sanctioned", townLocNation.getName()));
 				}
 				if (resident.hasNation() && townAtPlayerLoc.hasNation()) {
-					if (CombatUtil.isEnemy(resident.getTownOrNull(), townAtPlayerLoc) && disallowedZones.contains("enemy"))
+					if (CombatUtil.isEnemy(resident.getPrimaryTownOrNull(), townAtPlayerLoc) && disallowedZones.contains("enemy"))
 						throw new TownyException(Translatable.of("msg_err_x_spawn_disallowed_from_x", spawnType.typeName(), Translatable.of("msg_enemy_areas")));
 					Nation townLocNation = townAtPlayerLoc.getNationOrNull();
 					Nation resNation = resident.getNationOrNull();
@@ -859,7 +859,7 @@ public class SpawnUtil {
 	 * @return bed spawn OR town spawn OR last world spawn
 	 */
 	private static CompletableFuture<Location> getIdealLocation(Resident resident) {
-		Town town = resident.getTownOrNull();
+		Town town = resident.getPrimaryTownOrNull();
 		Location loc = resident.getPlayer().getWorld().getSpawnLocation();
 
 		if (town != null && town.hasSpawn())

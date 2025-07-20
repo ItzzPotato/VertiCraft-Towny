@@ -417,9 +417,9 @@ public class PlotCommand extends BaseCommand implements CommandExecutor {
 		if (playerIsAbleToJoinViaPlotClaim(resident, townBlock, town)) {
 			final List<WorldCoord> coords = selection;
 			Confirmation.runOnAccept(() -> {
-				try {
-					resident.setTown(town);
-				} catch (AlreadyRegisteredException ignored) {}
+                               try {
+                                       resident.addTown(town);
+                               } catch (AlreadyRegisteredException ignored) {}
 				try {
 					continuePlotClaimProcess(coords, resident, player);
 				} catch (TownyException e) {
@@ -534,7 +534,7 @@ public class PlotCommand extends BaseCommand implements CommandExecutor {
 				(resident.hasPermissionNode(PermissionNodes.TOWNY_COMMAND_PLOT_ASMAYOR.getNode()) && town.hasResident(resident))
 				|| (resident.hasPermissionNode(PermissionNodes.TOWNY_COMMAND_PLOT_ASMAYORINUNOWNED.getNode()) && town.hasResident(resident) && !townBlock.hasResident())
 				) {
-				selection = AreaSelectionUtil.filterOwnedBlocks(resident.getTown(), selection); // Treat it as a mayor able to put their town's plots for sale.
+                               selection = AreaSelectionUtil.filterOwnedBlocks(resident.getPrimaryTown(), selection); // Treat it as a mayor able to put their town's plots for sale.
 				selection = AreaSelectionUtil.filterOutResidentBlocks(resident, selection); // Filter out any resident-owned plots.
 			} else {
 				selection = AreaSelectionUtil.filterOwnedBlocks(resident, selection); // Treat it as a resident putting their own plots up for sale.
@@ -808,7 +808,7 @@ public class PlotCommand extends BaseCommand implements CommandExecutor {
 			(resident.hasPermissionNode(PermissionNodes.TOWNY_COMMAND_PLOT_ASMAYOR.getNode()) && town.hasResident(resident))
 			|| (resident.hasPermissionNode(PermissionNodes.TOWNY_COMMAND_PLOT_ASMAYORINUNOWNED.getNode()) && town.hasResident(resident) && !townBlock.hasResident())
 			) {
-			selection = AreaSelectionUtil.filterOwnedBlocks(resident.getTown(), selection); // Treat it as a mayor able to set their town's plots not for sale.
+                       selection = AreaSelectionUtil.filterOwnedBlocks(resident.getPrimaryTown(), selection); // Treat it as a mayor able to set their town's plots not for sale.
 		} else {
 			selection = AreaSelectionUtil.filterOwnedBlocks(resident, selection); // Treat it as a resident making their own plots not for sale.
 		}
@@ -1100,7 +1100,7 @@ public class PlotCommand extends BaseCommand implements CommandExecutor {
 			
 			TownyMessaging.sendPrefixedTownMessage(townBlock.getTownOrNull(), message);
 			
-			if (!resident.hasTown() || (resident.hasTown() && townBlock.getTownOrNull() != resident.getTownOrNull()))
+			if (!resident.hasTown() || (resident.hasTown() && townBlock.getTownOrNull() != resident.getPrimaryTownOrNull()))
 				TownyMessaging.sendMsg(resident, message);
 			
 			BukkitTools.fireEvent(new PlotSetForSaleEvent(resident, townBlock.getPlotPrice(), townBlock));
@@ -1643,7 +1643,7 @@ public class PlotCommand extends BaseCommand implements CommandExecutor {
 		
 		TownyMessaging.sendPrefixedTownMessage(town, message);
 		
-		if (!resident.hasTown() || resident.getTownOrNull() != town)
+		if (!resident.hasTown() || resident.getPrimaryTownOrNull() != town)
 			TownyMessaging.sendMsg(player, message);
 	}
 
@@ -1660,7 +1660,7 @@ public class PlotCommand extends BaseCommand implements CommandExecutor {
 
 		TownyMessaging.sendPrefixedTownMessage(town, Translatable.of("msg_player_made_group_not_for_sale", player.getName(), group.getName()));
 		
-		if (!resident.hasTown() || resident.getTownOrNull() != town)
+		if (!resident.hasTown() || resident.getPrimaryTownOrNull() != town)
 			TownyMessaging.sendMsg(player, Translatable.of("msg_player_made_group_not_for_sale", player.getName(), group.getName()));
 	}
 

@@ -2332,7 +2332,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				if (!newKing.isMayor())
 					throw new TownyException(Translatable.of("msg_err_new_king_notmayor"));
 				
-				changeNationOwnership(sender, nation, getResidentOrThrow(split[1]).getTown(), admin);
+                               changeNationOwnership(sender, nation, getResidentOrThrow(split[1]).getPrimaryTown(), admin);
 			} catch (TownyException e) {
 				TownyMessaging.sendErrorMsg(sender, e.getMessage(sender));
 			}

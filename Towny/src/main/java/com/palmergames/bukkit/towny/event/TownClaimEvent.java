@@ -65,6 +65,6 @@ public class TownClaimEvent extends Event  {
 	 * @return the Town which claimed this TownBlock.
 	 */
 	public Town getTown() {
-		return resident.getTownOrNull();
+		return resident.getPrimaryTownOrNull();
 	}
 }

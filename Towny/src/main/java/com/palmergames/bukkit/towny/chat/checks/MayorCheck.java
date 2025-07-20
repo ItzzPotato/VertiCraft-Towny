@@ -19,7 +19,7 @@ public class MayorCheck extends ChatCheck {
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();
 		Resident resident = townyUniverse.getResident(player.getUniqueId()); 
 		if(resident != null && resident.hasTown())
-			return resident.getTownOrNull().isMayor(resident);
+			return resident.getPrimaryTownOrNull().isMayor(resident);
 			
 		return false;
 	}

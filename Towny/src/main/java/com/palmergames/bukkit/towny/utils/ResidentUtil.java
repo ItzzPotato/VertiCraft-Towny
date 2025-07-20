@@ -283,8 +283,8 @@ public class ResidentUtil {
 			i++;
 		}
 		
-		if (!toRemove.isEmpty())
-			toRemove.stream().forEach(res -> res.removeTown());
+               if (!toRemove.isEmpty())
+                       toRemove.forEach(res -> res.removeTown(town));
 	}
 	
 

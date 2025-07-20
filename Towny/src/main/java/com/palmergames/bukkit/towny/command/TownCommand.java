@@ -675,7 +675,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 		case "new", "create"-> parseTownNewCommand(player, split);
 		case "notforsale", "nfs"-> parseTownNotForSaleCommand(player);
 		case "online"-> parseTownOnlineCommand(player, subArg);
-		case "outlaw", "ban"-> parseTownOutlawCommand(player, subArg, false, getResidentOrThrow(player).getTown());
+               case "outlaw", "ban"-> parseTownOutlawCommand(player, subArg, false, getResidentOrThrow(player).getPrimaryTown());
 		case "outlawlist"-> townOutlawList(player, split);
 		case "outpost"-> townOutpost(player, subArg);
 		case "plotgrouplist"-> townPlotGroupList(player, split);
@@ -791,11 +791,11 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 		Resident resident = getResidentOrThrow(player);
 
 		String received = Translatable.of("town_received_invites").forLocale(player)
-				.replace("%a", Integer.toString(resident.getTown().getReceivedInvites().size()))
-				.replace("%m", Integer.toString(InviteHandler.getReceivedInvitesMaxAmount(resident.getTown())));
+				.replace("%a", Integer.toString(resident.getPrimaryTown().getReceivedInvites().size()))
+				.replace("%m", Integer.toString(InviteHandler.getReceivedInvitesMaxAmount(resident.getPrimaryTown())));
 		String sent = Translatable.of("town_sent_invites").forLocale(player)
-				.replace("%a", Integer.toString(resident.getTown().getSentInvites().size()))
-				.replace("%m", Integer.toString(InviteHandler.getSentInvitesMaxAmount(resident.getTown())));
+				.replace("%a", Integer.toString(resident.getPrimaryTown().getSentInvites().size()))
+				.replace("%m", Integer.toString(InviteHandler.getSentInvitesMaxAmount(resident.getPrimaryTown())));
 
 		if (args.length == 0 || args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?") ) {
 			checkPermOrThrow(player, PermissionNodes.TOWNY_COMMAND_TOWN_INVITE_SEE_HOME.getNode());
@@ -831,7 +831,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 	private void listTownSentInvites(Player player, String[] args, Resident resident, String sent) throws TownyException {
 		checkPermOrThrow(player, PermissionNodes.TOWNY_COMMAND_TOWN_INVITE_LIST_SENT.getNode());
 
-		List<Invite> sentinvites = resident.getTown().getSentInvites();
+		List<Invite> sentinvites = resident.getPrimaryTown().getSentInvites();
 		int page = args.length > 0 ? MathUtil.getPositiveIntOrThrow(args[0]) : 1;
 		InviteCommand.sendInviteList(player, sentinvites, page, true);
 		TownyMessaging.sendMessage(player, sent);
@@ -840,7 +840,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 	private void removeAllTownSentInvites(Resident resident, Player player) throws TownyException {
 		checkPermOrThrow(player, PermissionNodes.TOWNY_COMMAND_TOWN_INVITE_ADD.getNode());
 
-		for (final Invite invite : new ArrayList<>(resident.getTown().getSentInvites()))
+		for (final Invite invite : new ArrayList<>(resident.getPrimaryTown().getSentInvites()))
 			invite.decline(true);
 
 		TownyMessaging.sendMessage(player, Translatable.of("msg_all_of_your_towns_sent_invites_have_been_cancelled"));
@@ -849,7 +849,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 	private void parseTownInviteReceivedCommand(Player player, String[] args, Resident resident, String received) throws TownyException {
 		checkPermOrThrow(player, PermissionNodes.TOWNY_COMMAND_TOWN_INVITE_LIST_RECEIVED.getNode());
 
-		List<Invite> receivedinvites = resident.getTown().getReceivedInvites();
+		List<Invite> receivedinvites = resident.getPrimaryTown().getReceivedInvites();
 		int page = args.length > 0 ? MathUtil.getPositiveIntOrThrow(args[0]) : 1;
 		InviteCommand.sendInviteList(player, receivedinvites, page, false);
 		TownyMessaging.sendMessage(player, received);
@@ -857,7 +857,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 
 	private void parseTownInviteAcceptCommand(Player player, String[] args, Resident resident) throws TownyException {
 		checkPermOrThrow(player, PermissionNodes.TOWNY_COMMAND_TOWN_INVITE_ACCEPT.getNode());
-		Town town = resident.getTown();
+		Town town = resident.getPrimaryTown();
 		List<Invite> invites = town.getReceivedInvites();
 
 		if (invites.size() == 0)
@@ -889,7 +889,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 
 	private void parseTownInviteDenyCommand(Player player, String[] args, Resident resident) throws TownyException {
 		checkPermOrThrow(player, PermissionNodes.TOWNY_COMMAND_TOWN_INVITE_DENY.getNode());
-		Town town = resident.getTown();
+		Town town = resident.getPrimaryTown();
 		List<Invite> invites = town.getReceivedInvites();
 
 		if (invites.size() == 0)
@@ -976,7 +976,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 
 		// Kick outlaws from town if they are residents.
 		if (town.hasResident(target)) {
-			target.removeTown();
+                       target.removeTown(town);
 			Object outlawer = (admin ? Translatable.of("admin_sing") : sender.getName());
 			TownyMessaging.sendMsg(target, Translatable.of("msg_kicked_by", outlawer));
 			TownyMessaging.sendPrefixedTownMessage(town, Translatable.of("msg_kicked", outlawer, target.getName()));
@@ -1248,7 +1248,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 		if (!admin) {
 			catchRuinedTown((Player) sender);
 			Resident resident = getResidentOrThrow(sender.getName());
-			town = resident.getTown();
+			town = resident.getPrimaryTown();
 			checkPermOrThrow(sender, PermissionNodes.TOWNY_COMMAND_TOWN_TOGGLE.getNode(split[0].toLowerCase(Locale.ROOT)));
 		}
 
@@ -1870,7 +1870,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 		
 		if (!admin && player != null) {
 			resident = getResidentOrThrow(player);
-			town = resident.getTown();
+			town = resident.getPrimaryTown();
 		} else // Have the resident being tested be the mayor.
 			resident = town.getMayor();
 
@@ -2627,7 +2627,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 
 		town.setRegistered(System.currentTimeMillis());
 		town.setMapColorHexCode(TownySettings.getDefaultTownMapColor());
-		resident.setTown(town);
+               resident.addTown(town);
 		town.setMayor(resident, false);
 		town.setFounder(resident.getName());
 
@@ -2742,8 +2742,8 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 		if (resident.isJailed() && resident.getJailTown().getUUID().equals(town.getUUID()))
 			JailUtil.unJailResident(resident, UnJailReason.LEFT_TOWN);
 
-		if (town.hasResident(resident))
-			resident.removeTown();
+               if (town.hasResident(resident))
+                       resident.removeTown(town);
 
 		TownyMessaging.sendPrefixedTownMessage(town, Translatable.of("msg_left_town", resident.getName()));
 		TownyMessaging.sendMsg(player, Translatable.of("msg_left_town", resident.getName()));
@@ -2874,7 +2874,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 		if (town.hasOutlaw(resident))
 			town.removeOutlaw(resident);
 
-		resident.setTown(town);
+               resident.addTown(town);
 		plugin.deleteCache(resident);
 		resident.save();
 		town.save();
@@ -2917,7 +2917,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 		checkPermOrThrow(player, PermissionNodes.TOWNY_COMMAND_TOWN_KICK.getNode());
 		catchRuinedTown(player);
 		Resident resident = getResidentOrThrow(player);
-		Town town = resident.getTown();
+		Town town = resident.getPrimaryTown();
 
 		townKickResidents(player, resident, town, ResidentUtil.getValidatedResidentsOfTown(player, town, names));
 
@@ -2969,8 +2969,8 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 			// Remove any trust they have in the town or town's plots.
 			resToKick.removeTrustInTown(town);
 
-			// Finally kick the resident.
-			resToKick.removeTown();
+                       // Finally kick the resident.
+                       resToKick.removeTown(town);
 		} catch (TownyException e) {
 			TownyMessaging.sendErrorMsg(sender, e.getMessage(sender));
 			return false;
@@ -3961,7 +3961,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 
 			// If the town is still null, the resident has to have a town.
 			if (town == null)
-				town = resident.getTownOrNull();
+				town = resident.getPrimaryTownOrNull();
 
 			// Figure out how much to deposit or withdraw.
 			int amount;
@@ -4347,7 +4347,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 
 				Resident currentMayor = town.getMayor();
 				if (resident.equals(currentMayor)) {
-					TownyMessaging.sendErrorMsg(sender, Translatable.of("msg_town_buytown_already_mayor", resident.getTownOrNull().getName()));
+					TownyMessaging.sendErrorMsg(sender, Translatable.of("msg_town_buytown_already_mayor", resident.getPrimaryTownOrNull().getName()));
 					return;
 				}
 
@@ -4362,8 +4362,8 @@ public class TownCommand extends BaseCommand implements CommandExecutor {
 				}
 				
 				try {
-					if (resident.hasTown())
-						resident.removeTown();
+                                       if (resident.hasTown())
+                                               resident.removeTown(resident.getPrimaryTownOrNull());
 					
 					townAddResident(town, resident);
 					town.setMayor(resident);

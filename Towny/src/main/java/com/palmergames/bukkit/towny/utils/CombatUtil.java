@@ -683,7 +683,7 @@ public class CombatUtil {
 	public static boolean isEnemyTownBlock(Player player, WorldCoord worldCoord) {
 		Resident resident = TownyUniverse.getInstance().getResident(player.getUniqueId());
 		if (resident != null && resident.hasTown() && worldCoord.hasTownBlock())
-			return CombatUtil.isEnemy(worldCoord.getTownOrNull(), resident.getTownOrNull());
+			return CombatUtil.isEnemy(worldCoord.getTownOrNull(), resident.getPrimaryTownOrNull());
 		return false;
 	}
 	

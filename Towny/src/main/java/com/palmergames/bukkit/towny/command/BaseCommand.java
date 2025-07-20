@@ -282,7 +282,7 @@ public class BaseCommand implements TabCompleter{
 	protected static Town getTownFromResidentOrThrow(@NotNull Resident resident) throws TownyException {
 		if (!resident.hasTown())
 			throw new TownyException(Translatable.of("msg_err_townyobject_x_has_no_town", resident));
-		return resident.getTownOrNull();
+		return resident.getPrimaryTownOrNull();
 	}
 
 	@NotNull

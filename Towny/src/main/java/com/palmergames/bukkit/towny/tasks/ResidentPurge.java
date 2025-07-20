@@ -62,11 +62,11 @@ public class ResidentPurge implements Runnable {
 				if (townless && resident.hasTown())
 					continue;
 
-				if (removeTown && resident.hasTown()) {
-					resident.removeTown();
-					count++;
-					continue;
-				}
+                               if (removeTown && resident.hasTown()) {
+                                       resident.removeTown(resident.getPrimaryTownOrNull());
+                                       count++;
+                                       continue;
+                               }
 
 				count++;
 				townyUniverse.getDataSource().removeResident(resident);

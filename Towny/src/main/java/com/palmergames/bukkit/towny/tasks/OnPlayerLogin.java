@@ -64,7 +64,7 @@ public class OnPlayerLogin implements Runnable {
 
 		TownyPerms.assignPermissions(resident, player);
 
-		final Town town = resident.getTownOrNull();
+		final Town town = resident.getPrimaryTownOrNull();
 		if (town != null) {
 			Nation nation = resident.getNationOrNull();
 
@@ -197,9 +197,9 @@ public class OnPlayerLogin implements Runnable {
 		Town town = TownyUniverse.getInstance().getTown(TownySettings.getDefaultTownName());
 		if (town == null)
 			return;
-		try {
-			resident.setTown(town);
-		} catch (AlreadyRegisteredException ignore) {}
+               try {
+                       resident.addTown(town);
+               } catch (AlreadyRegisteredException ignore) {}
 	}
 	
 	/**
